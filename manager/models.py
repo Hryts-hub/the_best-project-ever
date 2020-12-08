@@ -16,12 +16,26 @@ class Book(models.Model):
     text = models.TextField()
     authors = models.ManyToManyField(User, related_name="books")
     #likes = models.PositiveIntegerField(default=0)
-    #likes1 = models.ManyToManyField(
-        #User, through="manager.LikeBookUser", related_name="liked_books")
+    likes1 = models.ManyToManyField(
+        User, through="manager.LikeBookUser", related_name="liked_books")
 
 # чтобы в админке был не обджект, а название книги и ее id
     def __str__(self):
         return f"{self.title}-{self.id}"
+
+
+class LikeBookUser(models.Model):
+    class Meta:
+        unique_together = ("user", "book")
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked_book_table")
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="liked_book_table")
+
+    def save(self, **kwargs):
+        try:
+            super().save(**kwargs)
+        except:
+            LikeBookUser.objects.get(user=self.user, book=self.book).delete()
 
 
 class Comment(models.Model):
