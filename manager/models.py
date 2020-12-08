@@ -1,3 +1,26 @@
+from django.contrib.auth.models import User
 from django.db import models
 
-# Create your models here.
+
+class Book(models.Model):
+    class Meta:
+        verbose_name = "Книга"
+        verbose_name_plural = "Книги"
+
+    title = models.CharField(
+        max_length=50,
+        verbose_name="название",
+        help_text="ну это типо погоняло книги"
+    )
+    date = models.DateTimeField(auto_now_add=True, null=True)
+    text = models.TextField()
+    authors = models.ManyToManyField(User, related_name="books")
+    #likes = models.PositiveIntegerField(default=0)
+    #likes1 = models.ManyToManyField(
+        #User, through="manager.LikeBookUser", related_name="liked_books")
+
+# чтобы в админке был не обджект, а название книги и ее id
+    def __str__(self):
+        return f"{self.title}-{self.id}"
+
+
