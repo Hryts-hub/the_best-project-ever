@@ -43,6 +43,22 @@ class Comment(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="comments")
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    likes2 = models.ManyToManyField(
+        User, through="manager.LikeCommentUser", related_name="liked_comments")
 
     def __str__(self):
         return f"{self.book}-{self.author}-{self.date}"
+
+
+class LikeCommentUser(models.Model):
+    class Meta:
+        unique_together = ("user", "comment")
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked_comment_table")
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="liked_comment_table")
+
+    def save(self, **kwargs):
+        try:
+            super().save(**kwargs)
+        except:
+            LikeCommentUser.objects.get(user=self.user, comment=self.comment).delete()
