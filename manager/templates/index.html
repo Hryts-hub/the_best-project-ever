@@ -1,17 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'main_template.html' %}
+
+{% block main %}
+
 {{ user }}
     {% for b in books %}
-        <h1>{{ b.title }}</h1>
+         <a href="{% url 'book-detail' id=b.id %}">
+             <h1>{{ b.title }}</h1>
+         </a>
         <h2>{{ b.date }}</h2>
         <h3>{{ b.text }}</h3>
         <h4>Авторы книги: {{ b.authors.all }}</h4>
-        <a href="{% url 'add-like' id=b.id %}"><h4>Book Likes: {{ b.likes }}</h4></a>
+        <a href="{% url 'add-like' id=b.id %}">
+            <h4>Book Likes: {{ b.likes }}</h4>
+        </a>
+        {% for i in "12345" %}
+            {% if rate < i %}
+                <a href="{% url 'add-rate' id=b.id rate=i %}">
+                    <span class="fa fa-star"></span>
+                </a>
+            {% else %}
+                <a href="{% url 'add-rate' id=b.id rate=i %}">
+                    <span class="fa fa-star checked"></span>
+                </a>
+            {% endif %}
+        {% endfor %}
         {% for comment in b.comments.all %}
             <h4>{{ comment.text }}</h4>
             <h5>{{ comment.date }}</h5>
@@ -22,5 +34,5 @@
         {% endfor %}
         <br>
     {% endfor %}
-</body>
-</html>
+
+{% endblock %}
