@@ -11,12 +11,15 @@
         <h2>{{ b.date }}</h2>
         <h3>{{ b.text }}</h3>
         <h4>{{ b.authors.all }}</h4>
-        <a href="{% url 'add-like' id=b.id %}"><h4>Likes: {{ b.count }}</h4></a>
+<!--        <h6>Comments: {{ b.count_comment }}</h6>-->
+        <a href="{% url 'add-like' id=b.id %}"><h4>Book Likes: {{ b.count_like }}</h4></a>
         {% for comment in b.comments.all %}
             <h4>{{ comment.text }}</h4>
             <h5>{{ comment.date }}</h5>
             <h6>{{ comment.author }}</h6>
-            <a href="{% url 'add-like-comment' id=comment.id %}"><h4>Likes: {{ comment.likes2.count }}</h4></a>
+            <a href="{% url 'add-like-to-comment' id=comment.id %}">
+                <h4>Likes: {{ comment.count_like }}</h4>
+            </a>
         {% endfor %}
         <br>
     {% endfor %}
