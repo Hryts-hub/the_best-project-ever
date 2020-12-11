@@ -27,8 +27,7 @@ def hello(request, name="filipp", digit=None):
 class MyPage(View):
     def get(self, request):
         context = {}
-        comment_query = Comment.objects.annotate(
-            count_like=Count("users_like")).select_related("author")
+        comment_query = Comment.objects.select_related("author")
         comments = Prefetch("comments", comment_query)
         books = Book.objects.prefetch_related("authors", comments)
         context["books"] = books

@@ -49,11 +49,13 @@ class LikeBookUser(models.Model):
             self.book.likes += 1
         self.book.save()
 
+
 class Comment(models.Model):
     text = models.TextField()
     date = models.DateTimeField(auto_now_add=True)
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="comments")
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    likes = models.PositiveIntegerField(default=0)
     users_like = models.ManyToManyField(
         User,
         through="manager.LikeCommentUser",
@@ -71,9 +73,17 @@ class LikeCommentUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked_comment_table")
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="liked_comment_table")
 
+    # def save(self, **kwargs):
+    #     try:
+    #         super().save(**kwargs)
+    #     except:
+    #         LikeCommentUser.objects.get(user=self.user, comment=self.comment).delete()
     def save(self, **kwargs):
         try:
             super().save(**kwargs)
         except:
             LikeCommentUser.objects.get(user=self.user, comment=self.comment).delete()
-
+            self.comment.likes -= 1
+        else:
+            self.comment.likes += 1
+        self.comment.save()

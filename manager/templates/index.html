@@ -17,7 +17,7 @@
             <h5>{{ comment.date }}</h5>
             <h6>Автор комментария: {{ comment.author }}</h6>
             <a href="{% url 'add-like-to-comment' id=comment.id %}">
-                <h4>Likes: {{ comment.count_like }}</h4>
+                <h4>Likes: {{ comment.likes }}</h4>
             </a>
         {% endfor %}
         <br>

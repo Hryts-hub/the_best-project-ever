@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.db.models import Count
-from manager.models import Book
+from manager.models import Book, Comment
 
 
 class Command(BaseCommand):
@@ -11,3 +11,7 @@ class Command(BaseCommand):
         for b in book:
             b.likes = b.count_like
         Book.objects.bulk_update(book, ["likes"])
+        comments = Comment.objects.annotate(count_like=Count("users_like"))
+        for c in comments:
+            c.likes = c.count_like
+        Comment.objects.bulk_update(comments, ["likes"])
