@@ -11,7 +11,6 @@
         <h3>{{ b.text }}</h3>
         <h4>Авторы книги: {{ b.authors.all }}</h4>
         <h5>Число голосов: {{ b.count_rated_users }}</h5>
-        </a>
         {{ b.rate }}
         {% for i in range %}
             {% if b.rate >= i %}
@@ -28,7 +27,7 @@
             <h4>{{ comment.text }}</h4>
             <h5>{{ comment.date }}</h5>
             <h6>Автор комментария: {{ comment.author }}</h6>
-            <a href="{% url 'add-like-to-comment' id=comment.id %}">
+            <a href="{% url 'add-like-to-comment' id_book=b.id id_comment=comment.id %}">
                 <h4>Likes: {{ comment.likes }}</h4>
             </a>
         {% endfor %}
