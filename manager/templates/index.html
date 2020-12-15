@@ -10,11 +10,11 @@
         <h2>{{ b.date }}</h2>
         <h3>{{ b.text }}</h3>
         <h4>Авторы книги: {{ b.authors.all }}</h4>
-        <h4>Rated Users (Likes): {{ b.count_users }}</h4>
+        <h5>Число голосов: {{ b.count_rated_users }}</h5>
         </a>
-        {{ b.avg_rate }}
+        {{ b.rate }}
         {% for i in range %}
-            {% if b.avg_rate >= i %}
+            {% if b.rate >= i %}
                 <a href="{% url 'add-rate' id=b.id rate=i %}">
                     <span class="fa fa-star checked"></span>
                 </a>

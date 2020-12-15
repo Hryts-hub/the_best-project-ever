@@ -15,14 +15,21 @@ class Book(models.Model):
     date = models.DateTimeField(auto_now_add=True, null=True)
     text = models.TextField()
     authors = models.ManyToManyField(User, related_name="books")
-    likes = models.PositiveIntegerField(default=0)
+    count_rated_users = models.PositiveIntegerField(
+        default=0)  # likes
+    count_all_stars = models.PositiveIntegerField(
+        default=0)  #
+    rate = models.DecimalField(
+        decimal_places=2,
+        max_digits=3,
+        default=0.0)  #
     users_like = models.ManyToManyField(
         User,
         through="manager.LikeBookUser",
         related_name="liked_books"
     )
 
-    # чтобы в админке был не обджект, а название книги и ее id
+    # чтобы в админке был не object, а название книги и ее id
     def __str__(self):
         return f"{self.title}-{self.id}"
 
@@ -33,16 +40,22 @@ class LikeBookUser(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked_book_table")
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="liked_user_table")
-    rate = models.PositiveIntegerField(default=5)  #
+    rate = models.PositiveIntegerField(default=5)
 
-    def save(self, **kwargs):
+    def save(self, **kwargs):  #
         try:
             super().save(**kwargs)
-            self.book.likes += 1  #
+            # self.book.likes += 1  #
         except:  #
             lbu = LikeBookUser.objects.get(user=self.user, book=self.book)
+            self.book.count_all_stars -= lbu.rate
             lbu.rate = self.rate
             lbu.save()
+        else:
+            self.book.count_rated_users += 1
+        self.book.count_all_stars += self.rate
+        self.book.rate = self.book.count_all_stars / self.book.count_rated_users
+        self.book.save()
 
 
 class Comment(models.Model):

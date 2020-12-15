@@ -1,4 +1,4 @@
-from django.db.models import Count, Prefetch, Avg
+from django.db.models import Count, Prefetch
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
@@ -18,20 +18,9 @@ class MyPage(View):
         context = {}
         comment_query = Comment.objects.select_related("author")
         comments = Prefetch("comments", comment_query)
-        books = Book.objects.annotate(                #
-            avg_rate=Avg("liked_user_table__rate"),  #
-            count_users=Count("liked_user_table"))  #
-        books = books.prefetch_related("authors", comments)  #
-        context["books"] = books
-        context["range"] = range(1, 6)  #
+        context['books'] = Book.objects.prefetch_related("authors", comments)  #
+        context['range'] = range(1, 6)
         return render(request, "index.html", context)
-
-
-# class AddLike(View):
-#     def get(self, request, id):
-#         if request.user.is_authenticated:
-#             LikeBookUser.objects.create(user=request.user, book_id=id)
-#         return redirect("the-main-page")
 
 
 class AddLike2Comment(View):
