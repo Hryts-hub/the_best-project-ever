@@ -23,27 +23,28 @@ class MyPage(View):
         return render(request, "index.html", context)
 
 
-class AddLike2Comment(View):
-    def get(self, request, id_book, id_comment, location=None):
+class AddLike2Comment(View):  #
+    def get(self, request, slug, id_comment, location=None):
         if request.user.is_authenticated:
             LikeCommentUser.objects.create(user=request.user, comment_id=id_comment)
         if location is None:
             return redirect("the-main-page")
-        return redirect("book-detail", id=id_book)
+        return redirect("book-detail", slug=slug)
 
 
 class AddRate2Book(View):  #
-    def get(self, request, id, rate, location=None):
+    def get(self, request, slug, rate, location=None):
         if request.user.is_authenticated:
+            id = Book.objects.get(slug=slug).id
             RateBookUser.objects.create(user=request.user, book_id=id, rate=rate)
         if location is None:
             return redirect("the-main-page")
-        return redirect("book-detail", id=id)
+        return redirect("book-detail", slug=slug)
 
 
-class BookDetail(View):
-    def get(self, request, id):
-        comment_query = Comment.objects.annotate(count_like=Count("users_like")).select_related("author")
+class BookDetail(View):  #
+    def get(self, request, slug):
+        comment_query = Comment.objects.select_related("author")
         comments = Prefetch("comments", comment_query)
-        book = Book.objects.prefetch_related("authors", comments).get(id=id)
+        book = Book.objects.prefetch_related("authors", comments).get(slug=slug)
         return render(request, "book_detail.html", {"book": book, "range": range(1, 6)})

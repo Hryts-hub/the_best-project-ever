@@ -4,7 +4,7 @@
 
 {{ user }}
     {% for b in books %}
-         <a href="{% url 'book-detail' id=b.id %}">
+         <a href="{% url 'book-detail' slug=b.slug %}">
              <h1>{{ b.title }}</h1>
          </a>
         <h2>{{ b.date }}</h2>
@@ -14,11 +14,11 @@
         {{ b.rate }}
         {% for i in range %}
             {% if b.rate >= i %}
-                <a href="{% url 'add-rate' id=b.id rate=i %}">
+                <a href="{% url 'add-rate' slug=b.slug rate=i %}">
                     <span class="fa fa-star checked"></span>
                 </a>
             {% else %}
-                <a href="{% url 'add-rate' id=b.id rate=i %}">
+                <a href="{% url 'add-rate' slug=b.slug rate=i %}">
                     <span class="fa fa-star"></span>
                 </a>
             {% endif %}
@@ -27,7 +27,7 @@
             <h4>{{ comment.text }}</h4>
             <h5>{{ comment.date }}</h5>
             <h6>Автор комментария: {{ comment.author }}</h6>
-            <a href="{% url 'add-like-to-comment' id_book=b.id id_comment=comment.id %}">
+            <a href="{% url 'add-like-to-comment' slug=b.slug id_comment=comment.id %}">
                 <h4>Likes: {{ comment.likes }}</h4>
             </a>
         {% endfor %}

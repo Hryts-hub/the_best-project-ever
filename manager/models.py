@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from slugify import slugify
 
 
 class Book(models.Model):
@@ -28,10 +29,20 @@ class Book(models.Model):
         through="manager.LikeBookUser",
         related_name="liked_books"
     )
+    slug = models.SlugField(null=True, unique=True)  #
 
     # чтобы в админке был не object, а название книги и ее id
     def __str__(self):
         return f"{self.title}-{self.id}"
+
+    def save(self, **kwargs):  #
+        if self.id is None:
+            self.slug = slugify(self.title)
+        try:
+            super().save(**kwargs)
+        except:
+            self.slug += str(self.id)
+            super().save(**kwargs)
 
 
 class LikeBookUser(models.Model):
@@ -42,11 +53,10 @@ class LikeBookUser(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="liked_user_table")
     rate = models.PositiveIntegerField(default=5)
 
-    def save(self, **kwargs):  #
+    def save(self, **kwargs):
         try:
             super().save(**kwargs)
-            # self.book.likes += 1  #
-        except:  #
+        except:
             lbu = LikeBookUser.objects.get(user=self.user, book=self.book)
             self.book.count_all_stars -= lbu.rate
             lbu.rate = self.rate
