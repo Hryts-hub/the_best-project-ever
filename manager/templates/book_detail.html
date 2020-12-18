@@ -29,9 +29,20 @@
     <h4>{{ comment.text }}</h4>
     <h5>{{ comment.date }}</h5>
     <h6>Автор комментария: {{ comment.author }}</h6>
-    <a href="{% url 'add-like-to-comment-location' slug=book.slug id_comment=comment.id location=1%}">
+    <a href="{% url 'add-like-to-comment-location' slug=book.slug id_comment=comment.id location=1 %}">
         <h4>Likes: {{ comment.likes }}</h4>
     </a>
 {% endfor %}
+
+{% if user.is_authenticated %}
+<form action="{% url 'add-comment-location' slug=book.slug location=1 %}" method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="text">Добавьте комментарий:</label>
+        <input class="form-control" type="text" id="text" name='text' placeholder="Ваш комментарий"></input>
+    </div>
+    <input type="submit" value="OK">
+</form>
+{% endif %}
 
 {% endblock %}

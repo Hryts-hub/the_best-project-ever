@@ -78,3 +78,15 @@ class AddBook(View):
             book.authors.add(request.user)
             book.save()
         return redirect("the-main-page")
+
+
+class AddComment(View):
+    def post(self, request, slug, location=None):
+        if request.user.is_authenticated:
+            comment = Comment.objects.create(
+                text=request.POST['text'],
+                book=Book.objects.get(slug=slug),
+                author=request.user
+            )
+            comment.save()
+        return redirect("book-detail", slug=slug)
