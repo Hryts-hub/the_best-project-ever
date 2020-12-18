@@ -18,11 +18,8 @@ def hello(request, name="filipp", digit=None):
 class MyPage(View):
     def get(self, request):
         context = {}
-        comment_query = Comment.objects.select_related("author")
-        comments = Prefetch("comments", comment_query)
-        context['books'] = Book.objects.prefetch_related("authors", comments).annotate(
-             count_comment=Count("comments")
-        )
+        context['books'] = Book.objects.prefetch_related("authors").annotate(
+             count_comment=Count("comments"))
         context['range'] = range(1, 6)
         context['form'] = BookForm()
         context['login_form'] = AuthenticationForm()

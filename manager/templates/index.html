@@ -31,14 +31,7 @@
         {% endfor %}
         <br>
         <h6>Число комментариев: {{ b.count_comment }}</h6>
-        {% for comment in b.comments.all %}
-            <h4>{{ comment.text }}</h4>
-            <h5>{{ comment.date }}</h5>
-            <h6>Автор комментария: {{ comment.author }}</h6>
-            <a href="{% url 'add-like-to-comment' slug=b.slug id_comment=comment.id %}">
-                <h4>Likes: {{ comment.likes }}</h4>
-            </a>
-        {% endfor %}
+
         <br>
     {% endfor %}
 
