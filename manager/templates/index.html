@@ -3,9 +3,12 @@
 {% block title %} Главная {% endblock %}
 
 {% block main %}
+<a href="{% url 'login' %}">login</a>
+{{ user }}
+<a href="{% url 'logout' %}">logout</a>
 
 <h6>Главная</h6>
-{{ user }}
+
     {% for b in books %}
          <a href="{% url 'book-detail' slug=b.slug %}">
              <h1>{{ b.title }}</h1>
@@ -26,6 +29,8 @@
                 </a>
             {% endif %}
         {% endfor %}
+        <br>
+        <h6>Число комментариев: {{ b.count_comment }}</h6>
         {% for comment in b.comments.all %}
             <h4>{{ comment.text }}</h4>
             <h5>{{ comment.date }}</h5>
@@ -37,4 +42,13 @@
         <br>
     {% endfor %}
 
+{% if user.is_authenticated %}
+<form action="{% url 'add-book' %}" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="OK">
+</form>
+{% endif %}
+
 {% endblock %}
+

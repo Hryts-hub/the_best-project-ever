@@ -1,8 +1,10 @@
+from django.contrib.auth import login, logout
 from django.db.models import Count, Prefetch
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
-
+from django.contrib.auth.forms import AuthenticationForm
+from manager.forms import BookForm, CustomAuthenticationForm
 from manager.models import Book, LikeCommentUser, Comment
 from manager.models import LikeBookUser as RateBookUser
 
@@ -18,12 +20,32 @@ class MyPage(View):
         context = {}
         comment_query = Comment.objects.select_related("author")
         comments = Prefetch("comments", comment_query)
-        context['books'] = Book.objects.prefetch_related("authors", comments)
+        context['books'] = Book.objects.prefetch_related("authors", comments).annotate(
+             count_comment=Count("comments")
+        )
         context['range'] = range(1, 6)
+        context['form'] = BookForm()
+        context['login_form'] = AuthenticationForm()
         return render(request, "index.html", context)
 
 
-class AddLike2Comment(View):  #
+class LoginView(View):
+    def get(self, request):
+        return render(request, "login.html", {"form": CustomAuthenticationForm})
+
+    def post(self, request):
+        user = AuthenticationForm(data=request.POST)
+        if user.is_valid():
+            login(request, user.get_user())
+        return redirect("the-main-page")
+
+
+def logout_user(request):
+    logout(request)
+    return redirect("the-main-page")
+
+
+class AddLike2Comment(View):
     def get(self, request, slug, id_comment, location=None):
         if request.user.is_authenticated:
             LikeCommentUser.objects.create(user=request.user, comment_id=id_comment)
@@ -32,7 +54,7 @@ class AddLike2Comment(View):  #
         return redirect("book-detail", slug=slug)
 
 
-class AddRate2Book(View):  #
+class AddRate2Book(View):
     def get(self, request, slug, rate, location=None):
         if request.user.is_authenticated:
             id = Book.objects.get(slug=slug).id
@@ -42,9 +64,20 @@ class AddRate2Book(View):  #
         return redirect("book-detail", slug=slug)
 
 
-class BookDetail(View):  #
+class BookDetail(View):
     def get(self, request, slug):
         comment_query = Comment.objects.select_related("author")
         comments = Prefetch("comments", comment_query)
-        book = Book.objects.prefetch_related("authors", comments).get(slug=slug)
+        book = Book.objects.prefetch_related("authors", comments).annotate(
+             count_comment=Count("comments")).get(slug=slug)
         return render(request, "book_detail.html", {"book": book, "range": range(1, 6)})
+
+
+class AddBook(View):
+    def post(self, request):
+        if request.user.is_authenticated:
+            bf = BookForm(data=request.POST)
+            book = bf.save(commit=True)
+            book.authors.add(request.user)
+            book.save()
+        return redirect("the-main-page")
