@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.forms import AuthenticationForm
-from manager.forms import BookForm, CustomAuthenticationForm
+from manager.forms import BookForm, CustomAuthenticationForm, CommentForm
 from manager.models import Book, LikeCommentUser, Comment
 from manager.models import LikeBookUser as RateBookUser
 
@@ -67,7 +67,11 @@ class BookDetail(View):
         comments = Prefetch("comments", comment_query)
         book = Book.objects.prefetch_related("authors", comments).annotate(
              count_comment=Count("comments")).get(slug=slug)
-        return render(request, "book_detail.html", {"book": book, "range": range(1, 6)})
+        return render(request, "book_detail.html", {
+            "book": book,
+            "range": range(1, 6),
+            "form": CommentForm()
+        })
 
 
 class AddBook(View):

@@ -37,10 +37,7 @@
 {% if user.is_authenticated %}
 <form action="{% url 'add-comment-location' slug=book.slug location=1 %}" method="post">
     {% csrf_token %}
-    <div class="form-group">
-        <label for="text">Добавьте комментарий:</label>
-        <input class="form-control" type="text" id="text" name='text' placeholder="Ваш комментарий"></input>
-    </div>
+    {{ form }}
     <input type="submit" value="OK">
 </form>
 {% endif %}
