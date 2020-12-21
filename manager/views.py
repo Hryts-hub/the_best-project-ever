@@ -7,7 +7,7 @@ from django.views import View
 from django.contrib.auth.forms import AuthenticationForm
 from manager.forms import BookForm, CustomAuthenticationForm, CommentForm
 from manager.models import LikeCommentUser, Comment
-from manager.models import SlugBook as Book
+from manager.models import Book as Book
 from manager.models import LikeBookUser as RateBookUser
 
 
@@ -56,8 +56,7 @@ class AddLike2Comment(View):
 class AddRate2Book(View):
     def get(self, request, slug, rate, location=None):
         if request.user.is_authenticated:
-            # id = Book.objects.get(slug=slug).id
-            RateBookUser.objects.create(user=request.user, slug_id=slug, rate=rate)  #
+            RateBookUser.objects.create(user=request.user, book_id=slug, rate=rate)
         if location is None:
             return redirect("the-main-page")
         return redirect("book-detail", slug=slug)
@@ -123,11 +122,4 @@ class AddComment(View):
             comment.author = request.user
             comment = cf.save(commit=True)
             comment.save()
-            # +
-            # comment = Comment.objects.create(
-            #     text=request.POST['text'],
-            #     book=Book.objects.get(slug=slug),
-            #     author=request.user
-            # )
-            # comment.save()
         return redirect("book-detail", slug=slug)
