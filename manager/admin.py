@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from manager.models import Book, Comment
+from manager.models import Comment
+from manager.models import SlugBook as Book
 
 
 class CommentAdmin(admin.StackedInline):

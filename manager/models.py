@@ -9,49 +9,6 @@ class SlugBook(models.Model):  #
         verbose_name_plural = "Книги"
 
     slug = models.SlugField(primary_key=True)
-    id = models.PositiveIntegerField(default=0, unique=True)
-
-    title = models.CharField(
-        max_length=50,
-        verbose_name="название",
-        help_text="ну это типо погоняло книги"
-    )
-    date = models.DateTimeField(auto_now_add=True, null=True)
-    text = models.TextField()
-    authors = models.ManyToManyField(User, related_name="slug_books")
-    count_rated_users = models.PositiveIntegerField(
-        default=0)  # likes
-    count_all_stars = models.PositiveIntegerField(
-        default=0)
-    rate = models.DecimalField(
-        decimal_places=2,
-        max_digits=3,
-        default=0.0)
-    users_like = models.ManyToManyField(
-        User,
-        # null=True,  #
-        through="manager.LikeBookUser",
-        related_name="liked_slug_books"
-    )
-
-    def __str__(self):
-        return f"{self.title}-{self.slug}"
-
-    def save(self, **kwargs):  #
-        if self.slug is None:
-            self.slug = slugify(self.title)
-            self.id += 1
-        try:
-            super().save(**kwargs)
-        except:
-            self.slug += str(self.id)
-            super().save(**kwargs)
-
-
-class Book(models.Model):
-    class Meta:
-        verbose_name = "Книга"
-        verbose_name_plural = "Книги"
 
     title = models.CharField(
         max_length=50,
@@ -62,7 +19,7 @@ class Book(models.Model):
     text = models.TextField()
     authors = models.ManyToManyField(User, related_name="books")
     count_rated_users = models.PositiveIntegerField(
-        default=0)  # likes
+        default=0)
     count_all_stars = models.PositiveIntegerField(
         default=0)
     rate = models.DecimalField(
@@ -74,30 +31,72 @@ class Book(models.Model):
         through="manager.LikeBookUser",
         related_name="liked_books"
     )
-    slug = models.SlugField(null=True, unique=True)
 
     def __str__(self):
-        return f"{self.title}-{self.id}"
+        return f"{self.title}-{self.slug}"
 
-    def save(self, **kwargs):
-        if self.id is None:
-            self.slug = slugify(self.title)
-        try:
-            super().save(**kwargs)
-        except:
-            self.slug += str(self.id)
-            super().save(**kwargs)
+    # def save(self, **kwargs):  #
+    #     if self.slug == "":
+    #         self.slug = slugify(self.title)
+    #     try:
+    #         super().save(**kwargs)
+    #     except:
+    #         self.slug += str(self.date)
+    #         super().save(**kwargs)
+
+
+# class Book(models.Model):
+#     class Meta:
+#         verbose_name = "Книга"
+#         verbose_name_plural = "Книги"
+#
+#     title = models.CharField(
+#         max_length=50,
+#         verbose_name="название",
+#         help_text="ну это типо погоняло книги"
+#     )
+#     date = models.DateTimeField(auto_now_add=True, null=True)
+#     text = models.TextField()
+#     authors = models.ManyToManyField(User, related_name="books")
+#     count_rated_users = models.PositiveIntegerField(
+#         default=0)  # likes
+#     count_all_stars = models.PositiveIntegerField(
+#         default=0)
+#     rate = models.DecimalField(
+#         decimal_places=2,
+#         max_digits=3,
+#         default=0.0)
+#     users_like = models.ManyToManyField(
+#         User,
+#         through="manager.LikeBookUser",
+#         related_name="liked_books"
+#     )
+#     slug = models.SlugField(null=True, unique=True)
+#
+#     def __str__(self):
+#         return f"{self.title}-{self.id}"
+#
+#     def save(self, **kwargs):
+#         if self.id is None:
+#             self.slug = slugify(self.title)
+#         try:
+#             super().save(**kwargs)
+#         except:
+#             self.slug += str(self.id)
+#             super().save(**kwargs)
 
 
 class LikeBookUser(models.Model):
     class Meta:
-        unique_together = ("user", "book")
+        unique_together = ("user", "slug")
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked_book_table")
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="liked_user_table")
+    # book: Book = models.ForeignKey(
+    #     Book, on_delete=models.CASCADE, related_name="liked_user_table")
     rate = models.PositiveIntegerField(default=5)
 
-    slug = models.ForeignKey(SlugBook, null=True, on_delete=models.CASCADE, related_name="slug_liked_user_table")
+    slug: SlugBook = models.ForeignKey(
+        SlugBook, null=True, on_delete=models.CASCADE, related_name="liked_slug_books")
 
     def save(self, **kwargs):
         try:
@@ -117,11 +116,13 @@ class LikeBookUser(models.Model):
 class Comment(models.Model):
     text = models.TextField()
     date = models.DateTimeField(auto_now_add=True)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="comments")
+    # book: Book = models.ForeignKey(
+    #     Book, on_delete=models.CASCADE, related_name="comments", null=True)
 
-    slug = models.ForeignKey(SlugBook, null=True, on_delete=models.CASCADE, related_name="slug_comments")  #
+    slug: SlugBook = models.ForeignKey(
+        SlugBook, null=True, on_delete=models.CASCADE, related_name="slug_comments")  #
+
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-
     likes = models.PositiveIntegerField(default=0)
     users_like = models.ManyToManyField(
         User,

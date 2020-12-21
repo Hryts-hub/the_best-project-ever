@@ -1,0 +1,7 @@
+{% extends 'main_template.html' %}
+
+{% block update_book %}
+<form action="{% url 'update_book' "
+{% scrf_token %}
+
+{% endblock %}

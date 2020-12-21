@@ -33,6 +33,18 @@
         <h6>Число комментариев: {{ b.count_comment }}</h6>
 
         <br>
+        {% if b.is_owner %}
+            <a href="{% url 'delete-book' slug=b.slug %}">
+                <i>
+                    <input class="btn btn-danger" type="button" value="Delete book">
+                </i>
+            </a>
+            <a href="{% url 'update-book' slug=b.slug %}">
+                <i>
+                    <input class="btn btn-success" type="button" value="Update book">
+                </i>
+            </a>
+        {% endif %}
     {% endfor %}
 
 {% if user.is_authenticated %}

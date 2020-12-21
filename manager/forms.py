@@ -1,5 +1,6 @@
 from django.forms import ModelForm, TextInput, Textarea, CharField, PasswordInput
-from manager.models import Book, Comment
+from manager.models import Comment
+from manager.models import SlugBook as Book
 from django.contrib.auth.forms import AuthenticationForm, UsernameField
 
 
