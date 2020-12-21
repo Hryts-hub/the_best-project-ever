@@ -118,7 +118,7 @@ class AddComment(View):
             # +
             cf = CommentForm(data=request.POST)
             comment = cf.save(commit=False)
-            comment.book_id = Book.objects.get(slug=slug).id
+            comment.book_id = Book.objects.get(slug=slug).slug  #
             comment.author = request.user
             comment = cf.save(commit=True)
             comment.save()
