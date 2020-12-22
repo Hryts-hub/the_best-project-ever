@@ -1,7 +1,6 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.db.models import Count, Prefetch, Exists, OuterRef
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.forms import AuthenticationForm
@@ -59,12 +58,15 @@ class AddRate2Book(View):
         return redirect("book-detail", slug=slug)
 
 
-class BookDetail(View):
+class BookDetail(View):  # +
     def get(self, request, slug):
         comment_query = Comment.objects.select_related("author")
         comments = Prefetch("comments", comment_query)
         book = Book.objects.prefetch_related("authors", comments).annotate(
-            count_comment=Count("comments")).get(slug=slug)
+            count_comment=Count("comments"))  # тут get нельзя, т.к. получится 1 объект
+        if request.user.is_authenticated:  #
+            is_owner = Exists(User.objects.filter(books=OuterRef('pk'), id=request.user.id))
+            book = book.annotate(is_owner=is_owner).get(slug=slug)  # get после аннотации
         return render(request, "book_detail.html", {
             "book": book,
             "range": range(1, 6),
@@ -106,7 +108,7 @@ class UpdateBook(View):
                 bf = BookForm(instance=book, data=request.POST)
                 if bf.is_valid():
                     bf.save(commit=True)
-        return redirect("the-main-page")
+        return redirect("book-detail", slug=slug)
 
 
 class AddComment(View):

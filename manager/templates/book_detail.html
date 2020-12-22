@@ -14,7 +14,7 @@
 {{ book.rate }}
 {% for i in range %}
     {% if book.rate >= i %}
-        <a href="{% url 'add-rate-location' slug=book.slug rate=i location=1%}">
+        <a href="{% url 'add-rate-location' slug=book.slug rate=i location=1 %}">
             <span class="fa fa-star checked"></span>
         </a>
     {% else %}
@@ -23,8 +23,21 @@
         </a>
     {% endif %}
 {% endfor %}
+{% if book.is_owner %}
+    <a href="{% url 'delete-book' slug=book.slug %}">
+        <i>
+            <input class="btn btn-danger" type="button" value="Delete book">
+        </i>
+    </a>
+    <a href="{% url 'update-book' slug=book.slug %}">
+        <i>
+            <input class="btn btn-success" type="button" value="Update book">
+        </i>
+    </a>
+{% endif %}
 <br>
 <h6>Число комментариев: {{ book.count_comment }}</h6>
+
 {% for comment in book.comments.all %}
     <h4>{{ comment.text }}</h4>
     <h5>{{ comment.date }}</h5>

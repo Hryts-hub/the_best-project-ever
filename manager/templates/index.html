@@ -30,9 +30,6 @@
             {% endif %}
         {% endfor %}
         <br>
-        <h6>Число комментариев: {{ b.count_comment }}</h6>
-
-        <br>
         {% if b.is_owner %}
             <a href="{% url 'delete-book' slug=b.slug %}">
                 <i>
