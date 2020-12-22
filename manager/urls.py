@@ -1,6 +1,6 @@
 from django.urls import path
 from manager.views import MyPage, AddLike2Comment, AddRate2Book, BookDetail, AddBook, AddComment, book_delete, \
-    UpdateBook
+    UpdateBook, comment_delete, UpdateComment
 from manager.views import LoginView, logout_user
 
 
@@ -27,8 +27,9 @@ urlpatterns = [
     path("logout/", logout_user, name="logout"),
     path("delete_book/<str:slug>/", book_delete, name="delete-book"),
     path("update_book/<str:slug>/", UpdateBook.as_view(), name="update-book"),
-    # path("update_book/<str:slug>/<str:location>/",
-    #      UpdateBook.as_view(),
-    #      name="update-book-location"),
+    path("delete_comment/<str:slug>/<int:id_comment>/",
+         comment_delete,
+         name="delete-comment"),
+    path("update_comment/<str:slug>/<int:id_comment>/", UpdateComment.as_view(), name="update-comment"),
     path("", MyPage.as_view(), name="the-main-page"),
 ]

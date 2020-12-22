@@ -5,8 +5,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.forms import AuthenticationForm
 from manager.forms import BookForm, CustomAuthenticationForm, CommentForm
-from manager.models import LikeCommentUser, Comment
-from manager.models import Book as Book
+from manager.models import LikeCommentUser, Comment, Book
 from manager.models import LikeBookUser as RateBookUser
 
 
@@ -58,15 +57,19 @@ class AddRate2Book(View):
         return redirect("book-detail", slug=slug)
 
 
-class BookDetail(View):  # +
+class BookDetail(View):  #
     def get(self, request, slug):
         comment_query = Comment.objects.select_related("author")
+
+        if request.user.is_authenticated:
+            is_owner = Exists(User.objects.filter(users_comments=OuterRef('pk'), id=request.user.id))
+            comment_query = comment_query.annotate(is_owner=is_owner)
         comments = Prefetch("comments", comment_query)
         book = Book.objects.prefetch_related("authors", comments).annotate(
-            count_comment=Count("comments"))  # тут get нельзя, т.к. получится 1 объект
-        if request.user.is_authenticated:  #
+            count_comment=Count("comments"))
+        if request.user.is_authenticated:
             is_owner = Exists(User.objects.filter(books=OuterRef('pk'), id=request.user.id))
-            book = book.annotate(is_owner=is_owner).get(slug=slug)  # get после аннотации
+            book = book.annotate(is_owner=is_owner).get(slug=slug)
         return render(request, "book_detail.html", {
             "book": book,
             "range": range(1, 6),
@@ -121,3 +124,31 @@ class AddComment(View):
             comment = cf.save(commit=True)
             comment.save()
         return redirect("book-detail", slug=slug)
+
+
+def comment_delete(request, slug, id_comment):
+    if request.user.is_authenticated:
+        comment = Comment.objects.get(id=id_comment)
+        if request.user == comment.author:
+            comment.delete()
+    return redirect("book-detail", slug=slug)
+
+
+class UpdateComment(View):
+    def get(self, request, slug, id_comment):
+        if request.user.is_authenticated:
+            comment = Comment.objects.get(id=id_comment)
+            if request.user == comment.author:
+                form = CommentForm(instance=comment)
+                return render(request, "update_comment.html", {"form": form, "slug": slug, "id_comment": id_comment})
+        return redirect("book-detail", slug=slug)
+
+    def post(self, request, slug, id_comment):
+        if request.user.is_authenticated:
+            comment = Comment.objects.get(id=id_comment)
+            if request.user == comment.author:
+                cf = CommentForm(instance=comment, data=request.POST)
+                if cf.is_valid():
+                    cf.save(commit=True)
+        return redirect("book-detail", slug=slug)
+

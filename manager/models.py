@@ -74,7 +74,7 @@ class Comment(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     book: Book = models.ForeignKey(
         Book, null=True, on_delete=models.CASCADE, related_name="comments")
-    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name="users_comments")
     likes = models.PositiveIntegerField(default=0)
     users_like = models.ManyToManyField(
         User,
