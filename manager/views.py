@@ -1,6 +1,6 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
-from django.db.models import Count, Prefetch
+from django.db.models import Count, Prefetch, Exists, OuterRef
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
@@ -11,16 +11,13 @@ from manager.models import Book as Book
 from manager.models import LikeBookUser as RateBookUser
 
 
-def hello(request, name="filipp", digit=None):
-    if digit is not None:
-        return HttpResponse(f"digit is {digit}")
-    return HttpResponse(f"hello {name}")
-
-
 class MyPage(View):
     def get(self, request):
         context = {}
         books = Book.objects.prefetch_related("authors")
+        if request.user.is_authenticated:
+            is_owner = Exists(User.objects.filter(books=OuterRef('pk'), id=request.user.id))
+            books = books.annotate(is_owner=is_owner)
         context['books'] = books.order_by("-rate", "date")
         context['range'] = range(1, 6)
         context['form'] = BookForm()
@@ -67,7 +64,7 @@ class BookDetail(View):
         comment_query = Comment.objects.select_related("author")
         comments = Prefetch("comments", comment_query)
         book = Book.objects.prefetch_related("authors", comments).annotate(
-             count_comment=Count("comments")).get(slug=slug)
+            count_comment=Count("comments")).get(slug=slug)
         return render(request, "book_detail.html", {
             "book": book,
             "range": range(1, 6),
@@ -85,40 +82,39 @@ class AddBook(View):
         return redirect("the-main-page")
 
 
-# def book_delete(request, slug):
-#     if request.user.is_authenticated:
-#          book = Book.objects.get(slug=slug)
-#          if request.user in book.authors.all():
-#              book.delete()
-#     return redirect("the-main-page")
+def book_delete(request, slug):
+    if request.user.is_authenticated:
+        book = Book.objects.get(slug=slug)
+        if request.user in book.authors.all():
+            book.delete()
+    return redirect("the-main-page")
 
 
-# class UpdateBook(View):
-#     def get(self, request, slug):
-#         if request.user.is_authenticated:
-#             book = Book.objects.get(slug=slug)
-#             if request.user in book.authors.all():
-#                 form = BookForm(instance=book)
-#                 return render(request, "update_book.html", {"form": form, "slug": book.slug})
-#         return redirect("the-main-page")
-#
-#     def post(self, request, slug):
-#         if request.user.is_authenticated:
-#             book = Book.objects.get(slug=slug)
-#             if request.user in book.authors.all():
-#                 bf = BookForm(instance=book, data=request.POST)
-#                 if bf.is_valid():
-#                     bf.save(commit=True)
-#         return redirect("the-main-page")
+class UpdateBook(View):
+    def get(self, request, slug):
+        if request.user.is_authenticated:
+            book = Book.objects.get(slug=slug)
+            if request.user in book.authors.all():
+                form = BookForm(instance=book)
+                return render(request, "update_book.html", {"form": form, "slug": book.slug})
+        return redirect("the-main-page")
+
+    def post(self, request, slug):
+        if request.user.is_authenticated:
+            book = Book.objects.get(slug=slug)
+            if request.user in book.authors.all():
+                bf = BookForm(instance=book, data=request.POST)
+                if bf.is_valid():
+                    bf.save(commit=True)
+        return redirect("the-main-page")
 
 
 class AddComment(View):
     def post(self, request, slug, location=None):
         if request.user.is_authenticated:
-            # +
             cf = CommentForm(data=request.POST)
             comment = cf.save(commit=False)
-            comment.book_id = Book.objects.get(slug=slug).slug  #
+            comment.book_id = Book.objects.get(slug=slug).slug
             comment.author = request.user
             comment = cf.save(commit=True)
             comment.save()
