@@ -65,10 +65,8 @@ class BookDetail(View):
                 User.objects.filter(users_comments=OuterRef('pk'), id=request.user.id))
             is_liked = Exists(
                 User.objects.filter(liked_comments=OuterRef('pk'), id=request.user.id))
-            liked_comment_query = comment_query.annotate(is_liked=is_liked)
-            comment_query = comment_query.annotate(is_owner=is_owner)
-        # comments = Prefetch("comments", comment_query)  #
-        comments = Prefetch("comments", liked_comment_query)
+            comment_query = comment_query.annotate(is_owner=is_owner, is_liked=is_liked)
+        comments = Prefetch("comments", comment_query)
         book = Book.objects.prefetch_related("authors", comments).annotate(
             count_comment=Count("comments"))
         if request.user.is_authenticated:
