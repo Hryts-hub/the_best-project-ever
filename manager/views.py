@@ -14,8 +14,11 @@ class MyPage(View):
         context = {}
         books = Book.objects.prefetch_related("authors")
         if request.user.is_authenticated:
-            is_owner = Exists(User.objects.filter(books=OuterRef('pk'), id=request.user.id))
-            books = books.annotate(is_owner=is_owner)
+            is_owner = Exists(
+                User.objects.filter(books=OuterRef('pk'), id=request.user.id))
+            is_liked = Exists(
+                User.objects.filter(liked_books=OuterRef('pk'), id=request.user.id))
+            books = books.annotate(is_owner=is_owner, is_liked=is_liked)
         context['books'] = books.order_by("-rate", "date")
         context['range'] = range(1, 6)
         context['form'] = BookForm()
@@ -70,8 +73,11 @@ class BookDetail(View):
         book = Book.objects.prefetch_related("authors", comments).annotate(
             count_comment=Count("comments"))
         if request.user.is_authenticated:
-            is_owner = Exists(User.objects.filter(books=OuterRef('pk'), id=request.user.id))
-            book = book.annotate(is_owner=is_owner).get(slug=slug)
+            is_owner = Exists(
+                User.objects.filter(books=OuterRef('pk'), id=request.user.id))
+            is_liked = Exists(
+                User.objects.filter(liked_books=OuterRef('pk'), id=request.user.id))
+            book = book.annotate(is_owner=is_owner, is_liked=is_liked).get(slug=slug)
         return render(request, "book_detail.html", {
             "book": book,
             "range": range(1, 6),

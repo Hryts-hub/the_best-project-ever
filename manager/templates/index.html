@@ -11,7 +11,12 @@
 
     {% for b in books %}
          <a href="{% url 'book-detail' slug=b.slug %}">
-             <h1>{{ b.title }}</h1>
+             <h1>
+                 {{ b.title }}
+                 {% if b.is_liked %}
+                    <span class="fa fa-star checked"></span>
+                 {% endif %}
+             </h1>
          </a>
         <h2>{{ b.date }}</h2>
         <h3>{{ b.text }}</h3>
@@ -33,7 +38,7 @@
         {% if b.is_owner %}
             <a href="{% url 'delete-book' slug=b.slug %}">
                 <i>
-                    <input class="btn btn-danger" type="button" value="Delete book">
+                    <input class="btn btn-warning" type="button" value="Delete book">
                 </i>
             </a>
             <a href="{% url 'update-book' slug=b.slug %}">
