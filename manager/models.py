@@ -91,7 +91,7 @@ class LikeCommentUser(models.Model):
         unique_together = ("user", "comment")
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked_comment_table")
-    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="liked_comment_table")
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="liked_user_table")  #
 
     def save(self, **kwargs):
         try:

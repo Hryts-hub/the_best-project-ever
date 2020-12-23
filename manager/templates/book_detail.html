@@ -39,9 +39,13 @@
 <h6>Число комментариев: {{ book.count_comment }}</h6>
 
 {% for comment in book.comments.all %}
+    <br>
     <h4>{{ comment.text }}</h4>
     <h5>{{ comment.date }}</h5>
     <h6>Автор комментария: {{ comment.author }}</h6>
+    {% if comment.is_liked %}
+        <span class="fa fa-star checked"></span>
+    {% endif %}
     <a href="{% url 'add-like-to-comment-location' slug=book.slug id_comment=comment.id location=1 %}">
         <h4>Likes: {{ comment.likes }}</h4>
     </a>

@@ -57,14 +57,18 @@ class AddRate2Book(View):
         return redirect("book-detail", slug=slug)
 
 
-class BookDetail(View):  #
+class BookDetail(View):
     def get(self, request, slug):
         comment_query = Comment.objects.select_related("author")
-
         if request.user.is_authenticated:
-            is_owner = Exists(User.objects.filter(users_comments=OuterRef('pk'), id=request.user.id))
+            is_owner = Exists(
+                User.objects.filter(users_comments=OuterRef('pk'), id=request.user.id))
+            is_liked = Exists(
+                User.objects.filter(liked_comments=OuterRef('pk'), id=request.user.id))
+            liked_comment_query = comment_query.annotate(is_liked=is_liked)
             comment_query = comment_query.annotate(is_owner=is_owner)
-        comments = Prefetch("comments", comment_query)
+        # comments = Prefetch("comments", comment_query)  #
+        comments = Prefetch("comments", liked_comment_query)
         book = Book.objects.prefetch_related("authors", comments).annotate(
             count_comment=Count("comments"))
         if request.user.is_authenticated:
@@ -101,7 +105,11 @@ class UpdateBook(View):
             book = Book.objects.get(slug=slug)
             if request.user in book.authors.all():
                 form = BookForm(instance=book)
-                return render(request, "update_book.html", {"form": form, "slug": book.slug})
+                return render(
+                    request,
+                    "update_book.html",
+                    {"form": form, "slug": book.slug}
+                )
         return redirect("the-main-page")
 
     def post(self, request, slug):
@@ -140,7 +148,11 @@ class UpdateComment(View):
             comment = Comment.objects.get(id=id_comment)
             if request.user == comment.author:
                 form = CommentForm(instance=comment)
-                return render(request, "update_comment.html", {"form": form, "slug": slug, "id_comment": id_comment})
+                return render(
+                    request,
+                    "update_comment.html",
+                    {"form": form, "slug": slug, "id_comment": id_comment}
+                )
         return redirect("book-detail", slug=slug)
 
     def post(self, request, slug, id_comment):

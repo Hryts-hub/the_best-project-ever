@@ -30,6 +30,8 @@ urlpatterns = [
     path("delete_comment/<str:slug>/<int:id_comment>/",
          comment_delete,
          name="delete-comment"),
-    path("update_comment/<str:slug>/<int:id_comment>/", UpdateComment.as_view(), name="update-comment"),
+    path("update_comment/<str:slug>/<int:id_comment>/",
+         UpdateComment.as_view(),
+         name="update-comment"),
     path("", MyPage.as_view(), name="the-main-page"),
 ]
