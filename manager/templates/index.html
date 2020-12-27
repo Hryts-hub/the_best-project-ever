@@ -3,11 +3,14 @@
 {% block title %} Главная {% endblock %}
 
 {% block main %}
+<h3>Главная</h3>
 <a href="{% url 'login' %}">login</a>
-{{ user }}
-<a href="{% url 'logout' %}">logout</a>
 
-<h6>Главная</h6>
+<p class="text-success">Пользователь: {{ user }}</p>
+
+<a href="{% url 'logout' %}">logout</a>
+<br>
+<a href="{% url 'register' %}">Register</a>
 
     {% for b in books %}
          <a href="{% url 'book-detail' slug=b.slug %}">

@@ -1,19 +1,18 @@
 {% extends 'main_template.html' %}
 
-{% block login %}
+{% block register %}
 <a href="{% url 'the-main-page' %}">
     <h6>Главная</h6>
 </a>
-<h3>Войти</h3>
+<h3>Регистрация</h3>
 
 {% for msg in messages %}
-     <p class="text-danger">{{ msg }}</p>
+    <p class="text-danger">{{ msg }}</p>
 {% endfor %}
 
-<form action="{% url 'login' %}" method="post">
+<form action="{% url 'register' %}" method="post">
     {% csrf_token %}
     {{ form }}
-    <input type="submit" value="OK">
+    <input type="submit" value="AKE">
 </form>
-
 {% endblock %}
