@@ -1,6 +1,15 @@
 {% extends 'main_template.html' %}
 
+{% block title %} {{book.title}} {% endblock %}
+
 {% block update_book %}
+
+<a href="{% url 'the-main-page' %}">
+    <h6>Главная</h6>
+</a>
+
+<h3>Книга: {{book.title}}</h3>
+
 <form action="{% url 'update-book' slug=slug %}" method="post">
     {% csrf_token %}
     {{ form }}

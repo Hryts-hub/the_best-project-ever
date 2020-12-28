@@ -1,9 +1,11 @@
 {% extends 'main_template.html' %}
 
 {% block register %}
+<p class="text-success">Пользователь: {{ user }}</p>
 <a href="{% url 'the-main-page' %}">
     <h6>Главная</h6>
 </a>
+
 <h3>Регистрация</h3>
 
 {% for msg in messages %}
