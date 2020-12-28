@@ -8,7 +8,7 @@ class Book(models.Model):
         verbose_name = "Книга"
         verbose_name_plural = "Книги"
 
-    slug = models.SlugField(primary_key=True)
+    slug = models.SlugField(primary_key=True, verbose_name="slug - это поле нельзя изменить")
 
     title = models.CharField(
         max_length=50,
@@ -16,7 +16,7 @@ class Book(models.Model):
         help_text="ну это типо погоняло книги"
     )
     date = models.DateTimeField(auto_now_add=True, null=True)
-    text = models.TextField()
+    text = models.TextField(verbose_name="содержание",)
     authors = models.ManyToManyField(User, related_name="books")
     count_rated_users = models.PositiveIntegerField(
         default=0)
@@ -35,7 +35,7 @@ class Book(models.Model):
     def __str__(self):
         return f"{self.title}-{self.slug}"
 
-    def save(self, **kwargs):  #
+    def save(self, **kwargs):
         if self.slug == "":
             self.slug = slugify(self.title)
         try:

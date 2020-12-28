@@ -1,10 +1,10 @@
 from django.forms import ModelForm, TextInput, Textarea, CharField, PasswordInput
 from manager.models import Comment
 from manager.models import Book
-from django.contrib.auth.forms import AuthenticationForm, UsernameField, UserCreationForm  #
+from django.contrib.auth.forms import AuthenticationForm, UsernameField, UserCreationForm
 
 
-class CustomUserCreationForm(UserCreationForm):  #
+class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         pass
 
@@ -34,13 +34,28 @@ class CustomAuthenticationForm(AuthenticationForm):
 class BookForm(ModelForm):
     class Meta:
         model = Book
-        fields = ['title', 'text']
+        fields = ['slug', 'title', 'text']
         widgets = {
+            "slug": TextInput(attrs={"class": "form-control"}, ),
             "title": TextInput(attrs={"class": "form-control"}),
             "text": Textarea(attrs={"class": "form-control", "rows": 5, "cols": 50}),
         }
         help_texts = {
+            "slug": "",
             "title": "",
+            "text": "",
+        }
+        msg = ""
+
+
+class BookUpForm(ModelForm):
+    class Meta:
+        model = Book
+        fields = ['text']
+        widgets = {
+            "text": Textarea(attrs={"class": "form-control", "rows": 5, "cols": 50}),
+        }
+        help_texts = {
             "text": "",
         }
 

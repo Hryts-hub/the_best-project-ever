@@ -51,8 +51,14 @@
             </a>
         {% endif %}
     {% endfor %}
-
+<br>
+<br>
 {% if user.is_authenticated %}
+<br>
+{% for msg in messages %}
+    <p class="text-danger">{{ msg }}</p>
+{% endfor %}
+<h3>{{ user }} , вы можете добавить книгу!</h3>
 <form action="{% url 'add-book' %}" method="post">
     {% csrf_token %}
     {{ form }}

@@ -1,11 +1,11 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
-from django.contrib import messages  #
+from django.contrib import messages
 from django.db.models import Count, Prefetch, Exists, OuterRef
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.forms import AuthenticationForm
-from manager.forms import BookForm, CustomAuthenticationForm, CommentForm, CustomUserCreationForm
+from manager.forms import BookForm, CustomAuthenticationForm, CommentForm, CustomUserCreationForm, BookUpForm
 from manager.models import LikeCommentUser, Comment, Book
 from manager.models import LikeBookUser as RateBookUser
 
@@ -35,12 +35,12 @@ class LoginView(View):
         user = AuthenticationForm(data=request.POST)
         if user.is_valid():
             login(request, user.get_user())
-            return redirect("the-main-page")  #
-        messages.error(request, user.error_messages)  #
-        return redirect("login")  #
+            return redirect("the-main-page")
+        messages.error(request, user.error_messages)
+        return redirect("login")
 
 
-class RegisterView(View):  #
+class RegisterView(View):
     def get(self, request):
         form = CustomUserCreationForm()
         return render(request, "register.html", {"form": form})
@@ -106,9 +106,12 @@ class AddBook(View):
     def post(self, request):
         if request.user.is_authenticated:
             bf = BookForm(data=request.POST)
-            book = bf.save(commit=True)
-            book.authors.add(request.user)
-            book.save()
+            if bf.is_valid():
+                book = bf.save(commit=True)
+                book.authors.add(request.user)
+                book.save()
+                return redirect("the-main-page")
+        messages.error(request, "книга с таким slug уже существует!!! измените slug")
         return redirect("the-main-page")
 
 
@@ -122,14 +125,15 @@ def book_delete(request, slug):
 
 class UpdateBook(View):
     def get(self, request, slug):
+        book = Book.objects.get(slug=slug)
         if request.user.is_authenticated:
             book = Book.objects.get(slug=slug)
             if request.user in book.authors.all():
-                form = BookForm(instance=book)
+                form = BookUpForm(instance=book)
                 return render(
                     request,
                     "update_book.html",
-                    {"form": form, "slug": book.slug}
+                    {"form": form, "slug": book.slug, "book": book}
                 )
         return redirect("the-main-page")
 
@@ -137,7 +141,7 @@ class UpdateBook(View):
         if request.user.is_authenticated:
             book = Book.objects.get(slug=slug)
             if request.user in book.authors.all():
-                bf = BookForm(instance=book, data=request.POST)
+                bf = BookUpForm(instance=book, data=request.POST)
                 if bf.is_valid():
                     bf.save(commit=True)
         return redirect("book-detail", slug=slug)
