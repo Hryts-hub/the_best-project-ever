@@ -143,6 +143,27 @@ class UpdateBook(View):
                 bf = BookUpForm(instance=book, data=request.POST)
                 if bf.is_valid():
                     bf.save(commit=True)
+                    book.save()
+                    return redirect("book-detail", slug=slug)
+        messages.error(request, "книга не была обновлена")
+        return redirect("book-detail", slug=slug)
+
+
+class UpdateBookAuthor(View):  #
+    def post(self, request, slug):
+        if request.user.is_authenticated:
+            book = Book.objects.get(slug=slug)
+            users = User.objects.all()
+            if request.user in book.authors.all():
+                author = request.POST['text']
+                if users.filter(username=author).exists():
+                    print("тут был автор")
+                    author_id = users.get(username=author).id
+                    book.authors.add(author_id)
+                    book.save()
+                    return redirect("book-detail", slug=slug)
+        print("error")
+        messages.error(request, "книга не была обновлена")
         return redirect("book-detail", slug=slug)
 
 

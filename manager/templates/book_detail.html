@@ -7,6 +7,9 @@
     <h6>Главная</h6>
 </a>
 <p class="text-success">Пользователь: {{ user }}</p>
+{% for msg in messages %}
+    <p class="text-danger">{{ msg }}</p>
+{% endfor %}
 <h1>
     {{ book.title }}
     {% if book.is_liked %}

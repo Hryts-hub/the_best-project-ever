@@ -51,12 +51,14 @@ class BookForm(ModelForm):
 class BookUpForm(ModelForm):
     class Meta:
         model = Book
-        fields = ['text']
+        fields = [
+            'text'
+        ]
         widgets = {
-            "text": Textarea(attrs={"class": "form-control", "rows": 5, "cols": 50}),
+            "text": Textarea(attrs={"class": "form-control", "rows": 5, "cols": 50})
         }
         help_texts = {
-            "text": "",
+            "text": ""
         }
 
 
@@ -68,8 +70,21 @@ class CommentForm(ModelForm):
         ]
         widgets = {
             "text": Textarea(attrs={"class": "form-control", "rows": 5, "cols": 50}),
-            # "text": TextInput(attrs={"class": "form-control"}),
         }
         help_texts = {
             "text": "",
+        }
+
+
+class AuthorAddForm(ModelForm):
+    class Meta:
+        model = Book
+        fields = [
+            'authors'
+        ]
+        widgets = {
+            "authors": TextInput(attrs={"class": "form-control"}),
+        }
+        help_texts = {
+            "authors": "",
         }
