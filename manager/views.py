@@ -148,7 +148,6 @@ def book_delete(request, slug):
 
 class UpdateBook(View):
     def get(self, request, slug):
-        print("Up")
         if request.user.is_authenticated:
             book = Book.objects.get(slug=slug)
             if request.user in book.authors.all():
@@ -174,8 +173,6 @@ class UpdateBook(View):
 
 
 class UpdateBookAuthor(View):
-    print("Au")
-
     def post(self, request, slug):
         if request.user.is_authenticated:
             book = Book.objects.get(slug=slug)
