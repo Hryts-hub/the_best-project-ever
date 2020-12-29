@@ -128,7 +128,7 @@ class GenreFilter(View):
 class AddBook(View):
     def post(self, request):
         if request.user.is_authenticated:
-            bf = BookForm(request.POST, request.FILES)  #
+            bf = BookForm(request.POST, request.FILES)
             if bf.is_valid():
                 book = bf.save(commit=True)
                 book.authors.add(request.user)
@@ -163,7 +163,7 @@ class UpdateBook(View):
         if request.user.is_authenticated:
             book = Book.objects.get(slug=slug)
             if request.user in book.authors.all():
-                bf = BookUpForm(instance=book, data=request.POST)
+                bf = BookUpForm(instance=book, data=request.POST, files=request.FILES)
                 if bf.is_valid():
                     bf.save(commit=True)
                     book.save()
