@@ -52,7 +52,9 @@ class BookUpForm(ModelForm):
     class Meta:
         model = Book
         fields = [
-            'text'
+            'text',
+            'genres',
+            'authors'
         ]
         widgets = {
             "text": Textarea(attrs={"class": "form-control", "rows": 5, "cols": 50})

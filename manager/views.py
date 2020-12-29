@@ -148,6 +148,7 @@ def book_delete(request, slug):
 
 class UpdateBook(View):
     def get(self, request, slug):
+        print("Up")
         if request.user.is_authenticated:
             book = Book.objects.get(slug=slug)
             if request.user in book.authors.all():
@@ -173,6 +174,8 @@ class UpdateBook(View):
 
 
 class UpdateBookAuthor(View):
+    print("Au")
+
     def post(self, request, slug):
         if request.user.is_authenticated:
             book = Book.objects.get(slug=slug)
@@ -180,41 +183,12 @@ class UpdateBookAuthor(View):
             if request.user in book.authors.all():
                 author = request.POST['text']
                 if users.filter(username=author).exists():
-                    print("тут был автор")
                     author_id = users.get(username=author).id
                     book.authors.add(author_id)
                     book.save()
                     return redirect("book-detail", slug=slug)
-        print("error")
         messages.error(request, "книга не была обновлена")
         return redirect("book-detail", slug=slug)
-
-
-class UpdateBookGenre(View):
-    def get(self, request, slug):
-        pass
-    #     if request.user.is_authenticated:
-    #         book = Book.objects.get(slug=slug)
-    #         if request.user in book.authors.all():
-    #             form = BookUpForm(instance=book)
-    #             return render(
-    #                 request,
-    #                 "update_book.html",
-    #                 {"form": form, "slug": book.slug, "book": book}
-    #             )
-    #     return redirect("the-main-page")
-    #
-    # def post(self, request, slug):
-    #     if request.user.is_authenticated:
-    #         book = Book.objects.get(slug=slug)
-    #         if request.user in book.authors.all():
-    #             bf = BookUpForm(instance=book, data=request.POST)
-    #             if bf.is_valid():
-    #                 bf.save(commit=True)
-    #                 book.save()
-    #                 return redirect("book-detail", slug=slug)
-    #     messages.error(request, "книга не была обновлена")
-    #     return redirect("book-detail", slug=slug)
 
 
 class AddComment(View):

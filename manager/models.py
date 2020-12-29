@@ -38,7 +38,7 @@ class Book(models.Model):
         through="manager.LikeBookUser",
         related_name="liked_books"
     )
-    genres = models.ManyToManyField(Genre, related_name="books_genres")  #
+    genres = models.ManyToManyField(Genre, related_name="books_genres")
 
     def __str__(self):
         return f"{self.title}-{self.slug}"
