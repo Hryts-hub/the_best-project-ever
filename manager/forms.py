@@ -34,7 +34,7 @@ class CustomAuthenticationForm(AuthenticationForm):
 class BookForm(ModelForm):
     class Meta:
         model = Book
-        fields = ['slug', 'title', 'text']
+        fields = ['slug', 'title', 'text', 'book_img']
         widgets = {
             "slug": TextInput(attrs={"class": "form-control"}, ),
             "title": TextInput(attrs={"class": "form-control"}),

@@ -1,4 +1,7 @@
+from django.conf.urls.static import static
 from django.urls import path
+
+from book_shop import settings
 from manager.views import MyPage, AddLike2Comment, AddRate2Book, BookDetail, AddBook, AddComment, book_delete, \
     UpdateBook, comment_delete, UpdateComment, RegisterView, UpdateBookAuthor, GenreFilter
 from manager.views import LoginView, logout_user
@@ -40,3 +43,4 @@ urlpatterns = [
          name="update-comment"),
     path("", MyPage.as_view(), name="the-main-page"),
 ]
+

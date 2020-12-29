@@ -16,6 +16,8 @@
         <span class="fa fa-star checked"></span>
     {% endif %}
 </h1>
+<img src="{{ book.book_img.url}}" alt="{{ book.title }}" style="padding: 9px;max-width: 400px;max-height: 400px;">
+
 <h6>
     Жанр:
     {% for genre in book.genres.all %}
