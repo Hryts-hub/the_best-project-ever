@@ -16,10 +16,24 @@
         <span class="fa fa-star checked"></span>
     {% endif %}
 </h1>
+<h6>
+    Жанр:
+    {% for genre in book.genres.all %}
+    <span class="badge">
+        {{ genre }}
+    </span>
+    {% endfor %}
+</h6>
 <h2>{{ book.date }}</h2>
 <h3>{{ book.text }}</h3>
-<h4>Авторы книги: {{ book.authors.all }}</h4>
-<h5>Число голосов: {{ book.count_rated_users }}</h5>
+<h4>
+    Авторы книги:
+    {% for author in book.authors.all %}
+    <h6>{{ author }}</h6>
+    {% endfor %}
+</h4>
+
+<h4>Число голосов: {{ book.count_rated_users }}</h4>
 {{ book.rate }}
 {% for i in range %}
     {% if book.rate >= i %}

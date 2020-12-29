@@ -3,12 +3,19 @@ from django.db import models
 from slugify import slugify
 
 
+class Genre(models.Model):
+    genre = models.CharField(primary_key=True, max_length=50)
+
+    def __str__(self):
+        return f"{self.genre}"
+
+
 class Book(models.Model):
     class Meta:
         verbose_name = "Книга"
         verbose_name_plural = "Книги"
 
-    slug = models.SlugField(primary_key=True, verbose_name="slug - это поле нельзя изменить")
+    slug = models.SlugField(primary_key=True, verbose_name="slug - это поле будет нельзя изменить")
 
     title = models.CharField(
         max_length=50,
@@ -31,18 +38,19 @@ class Book(models.Model):
         through="manager.LikeBookUser",
         related_name="liked_books"
     )
+    genres = models.ManyToManyField(Genre, related_name="books_genres")  #
 
     def __str__(self):
         return f"{self.title}-{self.slug}"
 
-    def save(self, **kwargs):
-        if self.slug == "":
-            self.slug = slugify(self.title)
-        try:
-            super().save(**kwargs)
-        except:
-            self.slug += str(self.date)
-            super().save(**kwargs)
+    # def save(self, **kwargs):
+    #     if self.slug == "":
+    #         self.slug = slugify(self.title)
+    #     try:
+    #         super().save(**kwargs)
+    #     except:
+    #         self.slug += str(self.date)
+    #         super().save(**kwargs)
 
 
 class LikeBookUser(models.Model):

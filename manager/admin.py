@@ -1,6 +1,11 @@
 from django.contrib import admin
 from manager.models import Comment
 from manager.models import Book
+from manager.models import Genre
+
+
+class GenreAdmin(admin.ModelAdmin):
+    pass
 
 
 class CommentAdmin(admin.StackedInline):
@@ -16,3 +21,4 @@ class BookAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Book, BookAdmin)
+admin.site.register(Genre, GenreAdmin)

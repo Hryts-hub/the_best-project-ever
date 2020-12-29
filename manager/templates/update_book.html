@@ -26,4 +26,26 @@
     </div>
     <input type="submit" value="OK">
 </form>
+
+
+  <form action="/action_page.php">
+        {% for genre in genres %}
+        {% if genre in checked_genres %}
+            <div class="form-check-inline">
+              <label class="form-check-label" for="check1">
+                <input type="checkbox" class="form-check-input" id="check1" name="vehicle1" value="something" checked>
+                  {{ genre }}
+              </label>
+            </div>
+        {% else %}
+            <div class="form-check-inline">
+              <label class="form-check-label" for="check2">
+                <input type="checkbox" class="form-check-input" id="check2" name="vehicle2" value="something">
+                  {{ genre }}
+              </label>
+            </div>
+        {% endif %}
+        {% endfor %}
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
 {% endblock %}

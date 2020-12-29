@@ -1,35 +1,17 @@
 {% extends 'main_template.html' %}
 
-{% block title %} Главная {% endblock %}
+{% block title %} Фильрт жанров {% endblock %}
 
-{% block main %}
-
-{% for msg in messages %}
-    <p class="text-danger">{{ msg }}</p>
-{% endfor %}
-
+{% block genre_filter %}
 
 <h1><p class="bg-info text-white">
-    Главная
+    Фильтр {{ genre }}
 </p></h1>
-<h3>Фильтр жанров: </h3>
-{% for genre in genres_all %}
-    <a href="{% url 'books-genre' genre=genre %}">
-        <i>
-            <input class="btn btn-info" type="button" value= {{ genre }}>
-        </i>
-    </a>
 
-{% endfor %}
-
-<br>
-<a href="{% url 'login' %}">login</a>
-
+<a href="{% url 'the-main-page' %}">
+    <h6>Главная</h6>
+</a>
 <p class="text-success">Пользователь: {{ user }}</p>
-
-<a href="{% url 'logout' %}">logout</a>
-<br>
-<a href="{% url 'register' %}">Register</a>
 
     {% for b in books %}
          <a href="{% url 'book-detail' slug=b.slug %}">
@@ -83,20 +65,8 @@
             </a>
         {% endif %}
     {% endfor %}
-<br>
-<br>
-{% if user.is_authenticated %}
-<br>
-{% for msg in messages %}
-    <p class="text-danger">{{ msg }}</p>
-{% endfor %}
-<h3>{{ user }} , вы можете добавить книгу!</h3>
-<form action="{% url 'add-book' %}" method="post">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="OK">
-</form>
-{% endif %}
+
+
 
 {% endblock %}
 

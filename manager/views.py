@@ -6,14 +6,15 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.forms import AuthenticationForm
 from manager.forms import BookForm, CustomAuthenticationForm, CommentForm, CustomUserCreationForm, BookUpForm
-from manager.models import LikeCommentUser, Comment, Book
+from manager.models import LikeCommentUser, Comment, Book, Genre
 from manager.models import LikeBookUser as RateBookUser
 
 
 class MyPage(View):
     def get(self, request):
         context = {}
-        books = Book.objects.prefetch_related("authors")
+        genres_all = Genre.objects.all()
+        books = Book.objects.prefetch_related("authors", "genres")
         if request.user.is_authenticated:
             is_owner = Exists(
                 User.objects.filter(books=OuterRef('pk'), id=request.user.id))
@@ -24,6 +25,7 @@ class MyPage(View):
         context['range'] = range(1, 6)
         context['form'] = BookForm()
         context['login_form'] = AuthenticationForm()
+        context['genres_all'] = genres_all
         return render(request, "index.html", context)
 
 
@@ -102,6 +104,27 @@ class BookDetail(View):
         })
 
 
+class GenreFilter(View):
+    def get(self, request, genre):
+        context = {}
+        genres_all = Genre.objects.all()
+        genre = genres_all.get(genre=genre)
+        books = Book.objects.prefetch_related("authors", "genres")
+        if request.user.is_authenticated:
+            is_owner = Exists(
+                User.objects.filter(books=OuterRef('pk'), id=request.user.id))
+            is_liked = Exists(
+                User.objects.filter(liked_books=OuterRef('pk'), id=request.user.id))
+            books = books.annotate(is_owner=is_owner, is_liked=is_liked)
+        context['books'] = books.filter(genres=genre).order_by("-rate", "date")
+        context['range'] = range(1, 6)
+        context['form'] = BookForm()
+        context['login_form'] = AuthenticationForm()
+        context['genres_all'] = genres_all
+        context['genre'] = genre
+        return render(request, "books_genre_filter.html", context)
+
+
 class AddBook(View):
     def post(self, request):
         if request.user.is_authenticated:
@@ -149,7 +172,7 @@ class UpdateBook(View):
         return redirect("book-detail", slug=slug)
 
 
-class UpdateBookAuthor(View):  #
+class UpdateBookAuthor(View):
     def post(self, request, slug):
         if request.user.is_authenticated:
             book = Book.objects.get(slug=slug)
@@ -165,6 +188,33 @@ class UpdateBookAuthor(View):  #
         print("error")
         messages.error(request, "книга не была обновлена")
         return redirect("book-detail", slug=slug)
+
+
+class UpdateBookGenre(View):
+    def get(self, request, slug):
+        pass
+    #     if request.user.is_authenticated:
+    #         book = Book.objects.get(slug=slug)
+    #         if request.user in book.authors.all():
+    #             form = BookUpForm(instance=book)
+    #             return render(
+    #                 request,
+    #                 "update_book.html",
+    #                 {"form": form, "slug": book.slug, "book": book}
+    #             )
+    #     return redirect("the-main-page")
+    #
+    # def post(self, request, slug):
+    #     if request.user.is_authenticated:
+    #         book = Book.objects.get(slug=slug)
+    #         if request.user in book.authors.all():
+    #             bf = BookUpForm(instance=book, data=request.POST)
+    #             if bf.is_valid():
+    #                 bf.save(commit=True)
+    #                 book.save()
+    #                 return redirect("book-detail", slug=slug)
+    #     messages.error(request, "книга не была обновлена")
+    #     return redirect("book-detail", slug=slug)
 
 
 class AddComment(View):
