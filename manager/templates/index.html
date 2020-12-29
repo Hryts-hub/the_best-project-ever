@@ -91,9 +91,9 @@
     <p class="text-danger">{{ msg }}</p>
 {% endfor %}
 <h3>{{ user }} , вы можете добавить книгу!</h3>
-<form action="{% url 'add-book' %}" method="post">
+<form action="{% url 'add-book' %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    {{ form }}
+    {{ form.as_p }}
     <input type="submit" value="OK">
 </form>
 {% endif %}
