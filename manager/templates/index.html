@@ -30,7 +30,7 @@
 <br>
 <a href="{% url 'register' %}">Register</a>
 
-    {% for b in books %}
+    {% for b in page_obj %}
          <a href="{% url 'book-detail' slug=b.slug %}">
              <h1>
                  {{ b.title }}
@@ -83,20 +83,58 @@
             </a>
         {% endif %}
     {% endfor %}
+
 <br>
 <br>
+
 {% if user.is_authenticated %}
-<br>
-{% for msg in messages %}
-    <p class="text-danger">{{ msg }}</p>
-{% endfor %}
-<h3>{{ user }} , вы можете добавить книгу!</h3>
-<form action="{% url 'add-book' %}" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="OK">
-</form>
+    <br>
+    {% for msg in messages %}
+        <p class="text-danger">{{ msg }}</p>
+    {% endfor %}
+    <h3>{{ user }} , вы можете добавить книгу!</h3>
+    <form action="{% url 'add-book' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="OK">
+    </form>
 {% endif %}
+
+<ul class="pagination">
+    <li class="page-item">
+        <a class="page-link" href="?page=1">
+            1
+        </a>
+    </li>
+
+    {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                previous page
+            </a>
+        </li>
+    {% endif %}
+
+    <li class="page-item active">
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+    </li>
+
+    {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                next page
+            </a>
+        </li>
+    {% endif %}
+
+     <li class="page-item">
+         <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+             {{ page_obj.paginator.num_pages }}
+         </a>
+    </li>
+</ul>
 
 {% endblock %}
 

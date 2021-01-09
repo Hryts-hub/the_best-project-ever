@@ -1,6 +1,7 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
+from django.core.paginator import Paginator  #
 from django.db.models import Count, Prefetch, Exists, OuterRef
 from django.shortcuts import render, redirect
 from django.views import View
@@ -21,11 +22,17 @@ class MyPage(View):
             is_liked = Exists(
                 User.objects.filter(liked_books=OuterRef('pk'), id=request.user.id))
             books = books.annotate(is_owner=is_owner, is_liked=is_liked)
-        context['books'] = books.order_by("-rate", "date")
+        books = books.order_by("-rate", "date")  #
         context['range'] = range(1, 6)
         context['form'] = BookForm()
         context['login_form'] = AuthenticationForm()
         context['genres_all'] = genres_all
+
+        paginator = Paginator(books, 3)  # Show 3 books per page.
+        page_number = request.GET.get('page', 1)  # number of page or 1
+        page_obj = paginator.get_page(page_number)  #
+        context['page_obj'] = page_obj  #
+
         return render(request, "index.html", context)
 
 
@@ -37,7 +44,7 @@ class LoginView(View):
         user = AuthenticationForm(data=request.POST)
         if user.is_valid():
             login(request, user.get_user())
-            return redirect("the-personal-page")  #
+            return redirect("the-personal-page")
         messages.error(request, user.error_messages)
         return redirect("login")
 
@@ -53,7 +60,6 @@ class RegisterView(View):
             form.save()
             return redirect("login")
         messages.error(request, form.error_messages)
-        # messages.error(request, User.error_messages)
         return redirect("register")
 
 
@@ -98,7 +104,7 @@ class BookDetail(View):
             is_liked = Exists(
                 User.objects.filter(liked_books=OuterRef('pk'), id=request.user.id))
             book = book.annotate(is_owner=is_owner, is_liked=is_liked).get(slug=slug)
-        book = book.get(slug=slug)  # every user can now go to the book_detail
+        book = book.get(slug=slug)
         return render(request, "book_detail.html", {
             "book": book,
             "range": range(1, 6),
@@ -233,7 +239,7 @@ class UpdateComment(View):
         return redirect("book-detail", slug=slug)
 
 
-class PersonalView(View):  #
+class PersonalView(View):
     def get(self, request):
         if request.user.is_authenticated:
             pass

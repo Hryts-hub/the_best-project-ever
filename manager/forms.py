@@ -7,13 +7,8 @@ from django.contrib.auth.forms import AuthenticationForm, UsernameField, UserCre
 class CustomUserCreationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         pass
-        # username = UsernameField(widget=TextInput(attrs={"class": "form-control"}))
 
-    username = UsernameField(widget=TextInput(attrs={"class": "form-control"}),
-        # error_messages={
-        #     'unique': ("A user with that username already exists."),
-        # },
-                             )
+    username = UsernameField(widget=TextInput(attrs={"class": "form-control"})),
     password1 = CharField(
         label="Password",
         strip=False,
@@ -43,8 +38,8 @@ class BookForm(ModelForm):
             'slug',
             'title',
             'text',
-            # 'genres',
-            # 'book_img'
+            'genres',
+            'book_img'
         ]
         widgets = {
             "slug": TextInput(attrs={"class": "form-control"}, ),

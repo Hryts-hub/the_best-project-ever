@@ -38,7 +38,7 @@ urlpatterns = [
     path("update_comment/<str:slug>/<int:id_comment>/",
          UpdateComment.as_view(),
          name="update-comment"),
-    path("personal_page/", PersonalView.as_view(), name="the-personal-page"),  #
+    path("personal_page/", PersonalView.as_view(), name="the-personal-page"),
     path("", MyPage.as_view(), name="the-main-page"),
 ]
 
