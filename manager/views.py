@@ -105,8 +105,17 @@ class BookDetail(View):
                 User.objects.filter(books=OuterRef('pk'), id=request.user.id))
             is_liked = Exists(
                 User.objects.filter(liked_books=OuterRef('pk'), id=request.user.id))
-            book = book.annotate(is_owner=is_owner, is_liked=is_liked).get(slug=slug)
+            book = book.annotate(is_owner=is_owner, is_liked=is_liked)  # get надо было убрать, случайно оставался....
         book = book.get(slug=slug)
+
+        if request.user.is_authenticated:  #
+            users = User.objects.all()
+            read_user = request.user
+            if users.filter(username=read_user).exists():
+                read_users_id = users.get(username=read_user).id
+                book.read_users.add(read_users_id)
+                book.save()
+
         return render(request, "book_detail.html", {
             "book": book,
             "range": range(1, 6),
@@ -244,7 +253,12 @@ class UpdateComment(View):
 def personal_view(request):
     GIT_CLIENT_ID = "67034e1bad91d3ff3c17"
     url = f"https://github.com/login/oauth/authorize?client_id={GIT_CLIENT_ID}"
-    return render(request, "personal_page.html", {"url": url})
+
+    books = Book.objects.prefetch_related("read_users")  #
+    if request.user.is_authenticated:  #
+        books = books.filter(read_users=request.user)  #
+
+    return render(request, "personal_page.html", {"url": url, "my_books": books})
 
 
 def git_callback(request):
@@ -253,6 +267,7 @@ def git_callback(request):
     code = request.GET.get("code")
     url = f"https://github.com/login/oauth/access_token?client_id={GIT_CLIENT_ID}&client_secret={GIT_CLIENT_SECRET}&code={code}"
     response = post(url, headers={'Accept': 'application/json'})
+    r = response.json()
     access_token = response.json()['access_token']
     url = "https://api.github.com/user"
     response = get(url, headers={'Authorization': f'token {access_token}'})
@@ -260,4 +275,4 @@ def git_callback(request):
     url = f"https://api.github.com/users/{login}/repos"
     response = get(url)
     repos = [i['name'] for i in response.json()]
-    return render(request, "personal_page.html", {'data': repos})
+    return render(request, "personal_page.html", {'data': repos, "r": r})

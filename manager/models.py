@@ -38,8 +38,9 @@ class Book(models.Model):
         through="manager.LikeBookUser",
         related_name="liked_books"
     )
-    genres = models.ManyToManyField(Genre, blank=True, related_name="books_genres")  #
-    book_img = models.ImageField(upload_to='images/', default=0, blank=True, null=True)  #
+    genres = models.ManyToManyField(Genre, blank=True, related_name="books_genres")
+    book_img = models.ImageField(upload_to='images/', default=0, blank=True, null=True)
+    read_users = models.ManyToManyField(User, blank=True, related_name="books_read_by_user")  #
 
     def __str__(self):
         return f"{self.title}-{self.slug}"
