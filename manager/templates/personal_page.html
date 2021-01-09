@@ -8,9 +8,12 @@
     {{ user }}
 
     {% if user.is_authenticated %}
+        {% csrf_token %}
         <a href="{% url 'logout' %}">Logout</a>
         <h3>+ GitHub login</h3>
-
+        <a href="{{ url }}">AAAAAAAAAAAAAAAAAAAA</a>
+        <br>
+        {{ data }}
     {% else %}
         <a href="{% url 'login' %}">Login</a>
     {% endif %}

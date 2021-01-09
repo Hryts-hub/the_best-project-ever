@@ -6,6 +6,8 @@ from django.db.models import Count, Prefetch, Exists, OuterRef
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.forms import AuthenticationForm
+from pip._vendor.requests import post, get
+
 from manager.forms import BookForm, CustomAuthenticationForm, CommentForm, CustomUserCreationForm, BookUpForm
 from manager.models import LikeCommentUser, Comment, Book, Genre
 from manager.models import LikeBookUser as RateBookUser
@@ -239,8 +241,23 @@ class UpdateComment(View):
         return redirect("book-detail", slug=slug)
 
 
-class PersonalView(View):
-    def get(self, request):
-        if request.user.is_authenticated:
-            pass
-        return render(request, "personal_page.html")
+def personal_view(request):
+    GIT_CLIENT_ID = "67034e1bad91d3ff3c17"
+    url = f"https://github.com/login/oauth/authorize?client_id={GIT_CLIENT_ID}"
+    return render(request, "personal_page.html", {"url": url})
+
+
+def git_callback(request):
+    GIT_CLIENT_ID = "67034e1bad91d3ff3c17"
+    GIT_CLIENT_SECRET = "2723cc7ab60c2a1ed7208182bb896909362b88df"
+    code = request.GET.get("code")
+    url = f"https://github.com/login/oauth/access_token?client_id={GIT_CLIENT_ID}&client_secret={GIT_CLIENT_SECRET}&code={code}"
+    response = post(url, headers={'Accept': 'application/json'})
+    access_token = response.json()['access_token']
+    url = "https://api.github.com/user"
+    response = get(url, headers={'Authorization': f'token {access_token}'})
+    login = response.json()['login']
+    url = f"https://api.github.com/users/{login}/repos"
+    response = get(url)
+    repos = [i['name'] for i in response.json()]
+    return render(request, "personal_page.html", {'data': repos})
