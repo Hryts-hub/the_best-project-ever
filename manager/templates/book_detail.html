@@ -93,7 +93,7 @@
 {% if user.is_authenticated %}
 <form action="{% url 'add-comment-location' slug=book.slug location=1 %}" method="post">
     {% csrf_token %}
-    {{ form }}
+    {{ form.as_p }}
     <input type="submit" value="OK">
 </form>
 {% endif %}

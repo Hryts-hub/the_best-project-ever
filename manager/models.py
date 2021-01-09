@@ -79,7 +79,7 @@ class LikeBookUser(models.Model):
 
 
 class Comment(models.Model):
-    text = models.TextField()
+    text = models.TextField(verbose_name="Оставь свой коммент!")
     date = models.DateTimeField(auto_now_add=True)
     book: Book = models.ForeignKey(
         Book, null=True, on_delete=models.CASCADE, related_name="comments")

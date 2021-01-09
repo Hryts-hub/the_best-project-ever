@@ -37,7 +37,7 @@ class LoginView(View):
         user = AuthenticationForm(data=request.POST)
         if user.is_valid():
             login(request, user.get_user())
-            return redirect("the-main-page")
+            return redirect("the-personal-page")  #
         messages.error(request, user.error_messages)
         return redirect("login")
 
@@ -53,6 +53,7 @@ class RegisterView(View):
             form.save()
             return redirect("login")
         messages.error(request, form.error_messages)
+        # messages.error(request, User.error_messages)
         return redirect("register")
 
 
@@ -97,6 +98,7 @@ class BookDetail(View):
             is_liked = Exists(
                 User.objects.filter(liked_books=OuterRef('pk'), id=request.user.id))
             book = book.annotate(is_owner=is_owner, is_liked=is_liked).get(slug=slug)
+        book = book.get(slug=slug)  # every user can now go to the book_detail
         return render(request, "book_detail.html", {
             "book": book,
             "range": range(1, 6),
@@ -230,3 +232,9 @@ class UpdateComment(View):
                     cf.save(commit=True)
         return redirect("book-detail", slug=slug)
 
+
+class PersonalView(View):  #
+    def get(self, request):
+        if request.user.is_authenticated:
+            pass
+        return render(request, "personal_page.html")
