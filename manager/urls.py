@@ -39,7 +39,7 @@ urlpatterns = [
          UpdateComment.as_view(),
          name="update-comment"),
     path("personal_page/", personal_view, name="the-personal-page"),
-    path("git/", git_callback, name="git-callback"),  #
+    path("git/", git_callback, name="git-callback"),
     path("", MyPage.as_view(), name="the-main-page"),
 ]
 

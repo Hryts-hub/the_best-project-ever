@@ -112,3 +112,4 @@ class LikeCommentUser(models.Model):
         else:
             self.comment.likes += 1
         self.comment.save()
+

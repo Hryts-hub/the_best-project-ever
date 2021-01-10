@@ -1,13 +1,12 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.core.paginator import Paginator  #
+from django.core.paginator import Paginator
 from django.db.models import Count, Prefetch, Exists, OuterRef
 from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth.forms import AuthenticationForm
 from pip._vendor.requests import post, get
-
 from manager.forms import BookForm, CustomAuthenticationForm, CommentForm, CustomUserCreationForm, BookUpForm
 from manager.models import LikeCommentUser, Comment, Book, Genre
 from manager.models import LikeBookUser as RateBookUser
@@ -24,16 +23,16 @@ class MyPage(View):
             is_liked = Exists(
                 User.objects.filter(liked_books=OuterRef('pk'), id=request.user.id))
             books = books.annotate(is_owner=is_owner, is_liked=is_liked)
-        books = books.order_by("-rate", "date")  #
+        books = books.order_by("-rate", "date")
         context['range'] = range(1, 6)
         context['form'] = BookForm()
         context['login_form'] = AuthenticationForm()
         context['genres_all'] = genres_all
 
-        paginator = Paginator(books, 3)  # Show 3 books per page.
+        paginator = Paginator(books, 3)
         page_number = request.GET.get('page', 1)  # number of page or 1
-        page_obj = paginator.get_page(page_number)  #
-        context['page_obj'] = page_obj  #
+        page_obj = paginator.get_page(page_number)
+        context['page_obj'] = page_obj
 
         return render(request, "index.html", context)
 
@@ -108,7 +107,7 @@ class BookDetail(View):
             book = book.annotate(is_owner=is_owner, is_liked=is_liked)  # get надо было убрать, случайно оставался....
         book = book.get(slug=slug)
 
-        if request.user.is_authenticated:  #
+        if request.user.is_authenticated:
             users = User.objects.all()
             read_user = request.user
             if users.filter(username=read_user).exists():
@@ -261,18 +260,33 @@ def personal_view(request):
     return render(request, "personal_page.html", {"url": url, "my_books": books})
 
 
+#
+
 def git_callback(request):
     GIT_CLIENT_ID = "67034e1bad91d3ff3c17"
     GIT_CLIENT_SECRET = "2723cc7ab60c2a1ed7208182bb896909362b88df"
     code = request.GET.get("code")
     url = f"https://github.com/login/oauth/access_token?client_id={GIT_CLIENT_ID}&client_secret={GIT_CLIENT_SECRET}&code={code}"
     response = post(url, headers={'Accept': 'application/json'})
-    r = response.json()
+    # r = response.json()
     access_token = response.json()['access_token']
     url = "https://api.github.com/user"
     response = get(url, headers={'Authorization': f'token {access_token}'})
-    login = response.json()['login']
+    r = response.json()
+    login = r['login']
+    count_repos = r['public_repos']
     url = f"https://api.github.com/users/{login}/repos"
     response = get(url)
     repos = [i['name'] for i in response.json()]
-    return render(request, "personal_page.html", {'data': repos, "r": r})
+
+    books = Book.objects.prefetch_related("read_users")  #
+    if request.user.is_authenticated:  #
+        books = books.filter(read_users=request.user)  #
+
+    return render(request, "personal_page.html", {
+        'repos_list': repos,
+        # "r": r,
+        "my_books": books,
+        "login": login,
+        "count_repos": count_repos,
+    })
