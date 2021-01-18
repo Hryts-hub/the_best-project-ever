@@ -4,33 +4,45 @@
 
 {% block main %}
 
-{% for msg in messages %}
-    <p class="text-danger">{{ msg }}</p>
-{% endfor %}
+{% load static %}
 
+    {% for msg in messages %}
+        <p class="text-danger">{{ msg }}</p>
+    {% endfor %}
 
-<h1><p class="bg-info text-white">
-    Главная
-</p></h1>
-<h3>Фильтр жанров: </h3>
-{% for genre in genres_all %}
-    <a href="{% url 'books-genre' genre=genre %}">
-        <i>
-            <input class="btn btn-info" type="button" value= {{ genre }}>
-        </i>
-    </a>
-{% endfor %}
+    <p class="text-success">Пользователь: {{ user }}</p>
 
-<br>
-<a href="{% url 'login' %}">login</a>
+    {% if user.is_authenticated %}
+        <a href="{% url 'logout' %}">logout</a>
+        <br>
+        <a href="{% url 'the-personal-page' %}">
+            <h6>Кабинет</h6>
+        </a>
+    {% else %}
+        <a href="{% url 'register' %}">Register</a>
+        <br>
+        <a href="{% url 'login' %}">login</a>
+        <br>
+    {% endif %}
 
-<p class="text-success">Пользователь: {{ user }}</p>
+    <h1><p class="bg-info text-white">
+        Главная
+    </p></h1>
+    <h3>Фильтр жанров: </h3>
+    {% for genre in genres_all %}
+        <a href="{% url 'books-genre' genre=genre %}">
+            <i>
+                <input class="btn btn-info" type="button" value= {{ genre }}>
+            </i>
+        </a>
+    {% endfor %}
 
-<a href="{% url 'logout' %}">logout</a>
-<br>
-<a href="{% url 'register' %}">Register</a>
+    <br>
+    <br>
+    <br>
 
     {% for b in page_obj %}
+    <div id="{{ b.slug }}">
          <a href="{% url 'book-detail' slug=b.slug %}">
              <h1>
                  {{ b.title }}
@@ -71,70 +83,74 @@
         {% endfor %}
         <br>
         {% if b.is_owner %}
-            <a href="{% url 'delete-book' slug=b.slug %}">
-                <i>
+
+                <i class="delete-book" id="delete-book-{{ b.slug }}">
                     <input class="btn btn-warning" type="button" value="Delete book">
                 </i>
-            </a>
+
             <a href="{% url 'update-book' slug=b.slug %}">
                 <i>
                     <input class="btn btn-success" type="button" value="Update book">
                 </i>
             </a>
         {% endif %}
+    </div>
     {% endfor %}
 
-<br>
-<br>
-
-{% if user.is_authenticated %}
     <br>
-    {% for msg in messages %}
-        <p class="text-danger">{{ msg }}</p>
-    {% endfor %}
-    <h3>{{ user }} , вы можете добавить книгу!</h3>
-    <form action="{% url 'add-book' %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="OK">
-    </form>
-{% endif %}
+    <br>
 
-<ul class="pagination">
-    <li class="page-item">
-        <a class="page-link" href="?page=1">
-            1
-        </a>
-    </li>
-
-    {% if page_obj.has_previous %}
-        <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
-                previous page
-            </a>
-        </li>
+    {% if user.is_authenticated %}
+        <br>
+        {% for msg in messages %}
+            <p class="text-danger">{{ msg }}</p>
+        {% endfor %}
+        <h3>{{ user }} , вы можете добавить книгу!</h3>
+        <br>
+        <form action="{% url 'add-book' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="OK">
+        </form>
     {% endif %}
 
-    <li class="page-item active">
-        <span class="current">
-            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-        </span>
-    </li>
-
-    {% if page_obj.has_next %}
+    <ul class="pagination">
         <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}">
-                next page
+            <a class="page-link" href="?page=1">
+                1
             </a>
         </li>
-    {% endif %}
 
-     <li class="page-item">
-         <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
-             {{ page_obj.paginator.num_pages }}
-         </a>
-    </li>
-</ul>
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                    previous page
+                </a>
+            </li>
+        {% endif %}
+
+        <li class="page-item active">
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+        </li>
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                    next page
+                </a>
+            </li>
+        {% endif %}
+
+         <li class="page-item">
+             <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                 {{ page_obj.paginator.num_pages }}
+             </a>
+        </li>
+    </ul>
+
+<script src="{% static 'script.js' %}"></script>
 
 {% endblock %}
 
