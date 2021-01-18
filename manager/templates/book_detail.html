@@ -3,6 +3,9 @@
 {% block title %} {{book.title}} {% endblock %}
 
 {% block detail %}
+
+{% load static %}
+
 <a href="{% url 'the-main-page' %}">
     <h6>Главная</h6>
 </a>
@@ -68,14 +71,14 @@
     <h4>{{ comment.text }}</h4>
     <h5>{{ comment.date }}</h5>
     <h6>Автор комментария: {{ comment.author }}</h6>
-    <a href="{% url 'add-like-to-comment-location' slug=book.slug id_comment=comment.id location=1 %}">
-        <h4>
+
+        <h4 class="like-comment" id="comment-{{ comment.id }}">
             Likes: {{ comment.likes }}
             {% if comment.is_liked %}
                 <span class="fa fa-star checked"></span>
             {% endif %}
         </h4>
-    </a>
+
     {% if comment.is_owner %}
         <a href="{% url 'delete-comment' slug=book.slug id_comment=comment.id %}">
             <i>
@@ -97,5 +100,7 @@
     <input type="submit" value="OK">
 </form>
 {% endif %}
+
+<script src="{% static 'script.js' %}"></script>
 
 {% endblock %}

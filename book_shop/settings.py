@@ -24,7 +24,7 @@ SECRET_KEY = '5z#$^a_fa_3o6w(wz#wm1kc1+07$!#ms#$e#l0w+y7thf*5!9p'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'manager',
     'debug_toolbar',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [

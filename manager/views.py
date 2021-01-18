@@ -104,7 +104,7 @@ class BookDetail(View):
                 User.objects.filter(books=OuterRef('pk'), id=request.user.id))
             is_liked = Exists(
                 User.objects.filter(liked_books=OuterRef('pk'), id=request.user.id))
-            book = book.annotate(is_owner=is_owner, is_liked=is_liked)  # get надо было убрать, случайно оставался....
+            book = book.annotate(is_owner=is_owner, is_liked=is_liked)
         book = book.get(slug=slug)
 
         if request.user.is_authenticated:
