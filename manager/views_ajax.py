@@ -1,7 +1,7 @@
 from django.db.models import Exists, OuterRef
 from django.http import JsonResponse, HttpResponse
 from rest_framework import status
-from manager.models import LikeCommentUser, Comment
+from manager.models import LikeCommentUser, Comment, Book
 from django.contrib.auth.models import User
 
 
@@ -24,6 +24,16 @@ def delete_comment(request):
         comment = Comment.objects.get(id=request.GET.get("comment_id"))
         if request.user == comment.author:
             comment.delete()
+            return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
+        return JsonResponse({}, status=status.HTTP_403_FORBIDDEN)
+    return JsonResponse({}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+def delete_book(request):
+    if request.user.is_authenticated:
+        book = Book.objects.get(slug=request.GET.get("slug"))
+        if request.user in book.authors.all():
+            book.delete()
             return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
         return JsonResponse({}, status=status.HTTP_403_FORBIDDEN)
     return JsonResponse({}, status=status.HTTP_401_UNAUTHORIZED)
