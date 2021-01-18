@@ -1,6 +1,8 @@
+from django.db.models import Exists, OuterRef
 from django.http import JsonResponse, HttpResponse
 from rest_framework import status
 from manager.models import LikeCommentUser, Comment
+from django.contrib.auth.models import User
 
 
 def add_like2comment(request):
@@ -10,20 +12,24 @@ def add_like2comment(request):
         LikeCommentUser.objects.create(user=request.user, comment_id=comment_id)
         comment = Comment.objects.get(id=comment_id)
         count_likes = comment.likes
+        is_liked = Exists(
+            User.objects.filter(liked_comments=OuterRef('pk'), id=request.user.id))
+
         # count_likes = comment.users_like.count()
         # return HttpResponse(count_likes)
         return JsonResponse(
             {"likes": count_likes},
+
             status=status.HTTP_201_CREATED
         )
     return JsonResponse({}, status=status.HTTP_401_UNAUTHORIZED)
-#
-#
-# def delete_comment(request):
-#     if request.user.is_authenticated:
-#         comment = Comment.objects.get(id=request.GET.get("comment_id"))
-#         if request.user == comment.author:
-#             comment.delete()
-#             return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
-#         return JsonResponse({}, status=status.HTTP_403_FORBIDDEN)
-#     return JsonResponse({}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+def delete_comment(request):
+    if request.user.is_authenticated:
+        comment = Comment.objects.get(id=request.GET.get("comment_id"))
+        if request.user == comment.author:
+            comment.delete()
+            return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
+        return JsonResponse({}, status=status.HTTP_403_FORBIDDEN)
+    return JsonResponse({}, status=status.HTTP_401_UNAUTHORIZED)

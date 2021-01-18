@@ -10,4 +10,16 @@ $('document').ready(function () {
             }
         })
     });
+
+    $('.delete-comment').on('click', function () {
+        let id=$(this).attr('id'), id2=`block-comment-${id.split("-")[2]}`;
+        $.ajax({
+            url: "/shop/delete_comment_ajax",
+            data: {"comment_id": id.split("-")[2]},
+            method: "GET",
+            success: function (data) {
+                $(`#${id2}`).remove()
+            }
+        })
+    })
 })
