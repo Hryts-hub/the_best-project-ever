@@ -76,7 +76,7 @@
         <h4 class="like-comment" id="comment-{{ comment.id }}">
             Likes: {{ comment.likes }}
             {% if comment.is_liked %}
-                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked" id="fa-star-{{ comment.id }}"></span>
             {% endif %}
         </h4>
 

@@ -12,14 +12,8 @@ def add_like2comment(request):
         LikeCommentUser.objects.create(user=request.user, comment_id=comment_id)
         comment = Comment.objects.get(id=comment_id)
         count_likes = comment.likes
-        is_liked = Exists(
-            User.objects.filter(liked_comments=OuterRef('pk'), id=request.user.id))
-
-        # count_likes = comment.users_like.count()
-        # return HttpResponse(count_likes)
         return JsonResponse(
             {"likes": count_likes},
-
             status=status.HTTP_201_CREATED
         )
     return JsonResponse({}, status=status.HTTP_401_UNAUTHORIZED)
