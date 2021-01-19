@@ -33,5 +33,38 @@ $('document').ready(function () {
                 $(`#${id2}`).remove()
             }
         })
-    })
+    });
+
+    $('.rate').on('click', function () {
+        let id=$(this).attr('id'),
+            id6=`total_rate-${id.split("-")[1]}`,
+            id7=`voice-${id.split("-")[1]}`,
+            id8='check-star',
+            id9='dark-star';
+        console.log(id)
+        $.ajax({
+            url:"/shop/rate_ajax",
+            data: {"slug": id.split("-")[1], "rate": id.split("-")[2]},
+            method: "GET",
+            success: function (data) {
+                console.log(data['rate']);
+
+                $(`#${id6}`).html(data['rate']);
+                $(`#${id7}`).html(`Число голосов: ${data['count_rated_users']}`);
+                var
+                    dark = document.getElementById(id9).innerHTML,
+                    check = document.getElementById(id8).innerHTML;
+
+                for (let i=1; i<6; i++) {
+                    if (data['rate'] >= i) {
+                        document.getElementById(`star-${id.split("-")[1]}-${i}`).innerHTML = check;
+                    }
+                    else {
+                        document.getElementById(`star-${id.split("-")[1]}-${i}`).innerHTML = dark;
+                    }
+                }
+
+            }
+        })
+    });
 })

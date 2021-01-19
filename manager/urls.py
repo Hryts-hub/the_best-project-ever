@@ -2,7 +2,7 @@ from django.urls import path
 from manager.views import MyPage, AddLike2Comment, AddRate2Book, BookDetail, AddBook, AddComment, book_delete, \
     UpdateBook, comment_delete, UpdateComment, RegisterView, UpdateBookAuthor, GenreFilter, personal_view, git_callback
 from manager.views import LoginView, logout_user
-from manager.views_ajax import add_like2comment, delete_comment, delete_book
+from manager.views_ajax import add_like2comment, delete_comment, delete_book, add_rate
 
 urlpatterns = [
     path("books_genre/<str:genre>/", GenreFilter.as_view(), name="books-genre"),
@@ -15,6 +15,7 @@ urlpatterns = [
     path("add_rate_to_book/<str:slug>/<int:rate>/<str:location>/",
          AddRate2Book.as_view(),
          name="add-rate-location"),
+    path("rate_ajax/", add_rate),  #
     path("book_view_detail/<str:slug>/",
          BookDetail.as_view(),
          name="book-detail"),
@@ -28,7 +29,7 @@ urlpatterns = [
     path("register/", RegisterView.as_view(), name='register'),
     path("logout/", logout_user, name="logout"),
     path("delete_book/<str:slug>/", book_delete, name="delete-book"),
-    path("delete_book_ajax", delete_book),  #
+    path("delete_book_ajax", delete_book),
     path("update_book/<str:slug>/", UpdateBook.as_view(), name="update-book"),
     path("update_book_author/<str:slug>/",
          UpdateBookAuthor.as_view(),

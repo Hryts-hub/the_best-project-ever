@@ -10,11 +10,12 @@
     <h6>Главная</h6>
 </a>
 <p class="text-success">Пользователь: {{ user }}</p>
+
 {% for msg in messages %}
     <p class="text-danger">{{ msg }}</p>
 {% endfor %}
 
-<div id="{{ book.slug }}">
+<div class="book" id="{{ book.slug }}">
     <h1>
         {{ book.title }}
         {% if book.is_liked %}
@@ -36,23 +37,27 @@
     <h4>
         Авторы книги:
         {% for author in book.authors.all %}
-        <h6>{{ author }}</h6>
+            {{ author }}
         {% endfor %}
     </h4>
 
-    <h4>Число голосов: {{ book.count_rated_users }}</h4>
-    {{ book.rate }}
+
+    <h4 id="voice-{{ book.slug }}">Число голосов: {{ book.count_rated_users }}</h4>
+    <nobr id="total_rate-{{ book.slug }}">{{ book.rate }}</nobr>
     {% for i in range %}
         {% if book.rate >= i %}
-            <a href="{% url 'add-rate-location' slug=book.slug rate=i location=1 %}">
+            <nobr class="rate" id="star-{{ book.slug }}-{{ i }}">
                 <span class="fa fa-star checked"></span>
-            </a>
+            </nobr>
         {% else %}
-            <a href="{% url 'add-rate-location' slug=book.slug rate=i location=1 %}">
+            <nobr class="rate" id="star-{{ book.slug }}-{{ i }}">
                 <span class="fa fa-star"></span>
-            </a>
+            </nobr>
         {% endif %}
     {% endfor %}
+    <br>
+    <br>
+
     {% if book.is_owner %}
 
             <i class="delete-book" id="delete-book-{{ book.slug }}">
@@ -78,7 +83,7 @@
             <h4 class="like-comment" id="comment-{{ comment.id }}">
                 Likes: {{ comment.likes }}
                 {% if comment.is_liked %}
-                    <span class="fa fa-star checked" id="fa-star-{{ comment.id }}"></span>
+                    <span class="fa fa-star checked"></span>
                 {% endif %}
             </h4>
 
@@ -98,6 +103,8 @@
 
     {% endfor %}
 
+    <br>
+
     {% if user.is_authenticated %}
     <form action="{% url 'add-comment-location' slug=book.slug location=1 %}" method="post">
         {% csrf_token %}
@@ -105,6 +112,13 @@
         <input type="submit" value="OK">
     </form>
     {% endif %}
+
+    <nobr id="check-star">
+        <span class="fa fa-star checked"></span>
+    </nobr>
+    <nobr id="dark-star">
+        <span class="fa fa-star"></span>
+    </nobr>
 
 </div>
 

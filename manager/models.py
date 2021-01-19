@@ -74,7 +74,7 @@ class LikeBookUser(models.Model):
             lbu.save()
         else:
             self.book.count_rated_users += 1
-        self.book.count_all_stars += self.rate
+        self.book.count_all_stars += int(self.rate)
         self.book.rate = self.book.count_all_stars / self.book.count_rated_users
         self.book.save()
 

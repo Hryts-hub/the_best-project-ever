@@ -3,6 +3,7 @@ from django.http import JsonResponse, HttpResponse
 from rest_framework import status
 from manager.models import LikeCommentUser, Comment, Book
 from django.contrib.auth.models import User
+from manager.models import LikeBookUser as RateBookUser
 
 
 def add_like2comment(request):
@@ -36,4 +37,20 @@ def delete_book(request):
             book.delete()
             return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
         return JsonResponse({}, status=status.HTTP_403_FORBIDDEN)
+    return JsonResponse({}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+def add_rate(request):
+    if request.user.is_authenticated:
+        RateBookUser.objects.create(
+            user=request.user,
+            book_id=request.GET.get("slug"),
+            rate=request.GET.get("rate"))
+        book = Book.objects.get(slug=request.GET.get("slug"))
+        rate = book.rate
+        count_rated_users = book.count_rated_users
+        return JsonResponse(
+            {"rate": rate, "count_rated_users": count_rated_users},
+            status=status.HTTP_201_CREATED
+        )
     return JsonResponse({}, status=status.HTTP_401_UNAUTHORIZED)
