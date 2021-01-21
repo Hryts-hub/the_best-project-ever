@@ -2,11 +2,11 @@ from django.urls import path
 from manager.views import MyPage, AddLike2Comment, AddRate2Book, BookDetail, AddBook, AddComment, book_delete, \
     UpdateBook, comment_delete, UpdateComment, RegisterView, UpdateBookAuthor, GenreFilter, personal_view, git_callback
 from manager.views import LoginView, logout_user
-from manager.views_ajax import add_like2comment, delete_comment, delete_book, add_rate
+from manager.views_ajax import add_like2comment, delete_comment, delete_book, add_rate, add_comment
 
 urlpatterns = [
     path("books_genre/<str:genre>/", GenreFilter.as_view(), name="books-genre"),
-    path("add_like_to_comment/<str:slug>/<int:id_comment>/<str:location>/",
+    path("add_like_to_comment/<str:slug>/<int:id_comment>/",  #
          AddLike2Comment.as_view(),
          name="add-like-to-comment-location"),
     path("add_rate_to_book/<str:slug>/<int:rate>/",
@@ -22,9 +22,10 @@ urlpatterns = [
     path("add_book/",
          AddBook.as_view(),
          name="add-book"),
-    path("add_comment_location/<str:slug>/<str:location>/",
+    path("add_comment_location/<str:slug>/",  #
          AddComment.as_view(),
          name="add-comment-location"),
+    path("add_comment_ajax", add_comment),  #
     path("login/", LoginView.as_view(), name="login"),
     path("register/", RegisterView.as_view(), name='register'),
     path("logout/", logout_user, name="logout"),

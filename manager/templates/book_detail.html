@@ -76,11 +76,11 @@
     {% for comment in book.comments.all %}
     <div id="block-comment-{{ comment.id }}">
         <br>
-        <h4>{{ comment.text }}</h4>
-        <h5>{{ comment.date }}</h5>
-        <h6>Автор комментария: {{ comment.author }}</h6>
+        <h4 id="comment-text-{{ comment.id }}">{{ comment.text }}</h4>
+        <h5 id="comment-date-{{ comment.id }}">{{ comment.date }}</h5>
+        <h6 id="comment-author-{{ comment.id }}">Автор комментария: {{ comment.author }}</h6>
 
-            <h4 class="like-comment" id="comment-{{ comment.id }}">
+            <h4 class="like-comment" id="comment-like-{{ comment.id }}">
                 Likes: {{ comment.likes }}
                 {% if comment.is_liked %}
                     <span class="fa fa-star checked"></span>
@@ -93,7 +93,7 @@
                 <input class="btn btn-warning" type="button" value="Delete comment">
             </i>
 
-            <a href="{% url 'update-comment' slug=book.slug id_comment=comment.id %}">
+            <a href="{% url 'update-comment' slug=book.slug id_comment=comment.id %}" id="update-comment-{{ comment.id }}">
                 <i>
                     <input class="btn btn-success" type="button" value="Update comment">
                 </i>
@@ -106,19 +106,19 @@
     <br>
 
     {% if user.is_authenticated %}
-    <form action="{% url 'add-comment-location' slug=book.slug location=1 %}" method="post">
+    <form id="com-{{ book.slug }}-{{ user }}">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="OK">
     </form>
     {% endif %}
 
-    <nobr id="check-star">
-        <span class="fa fa-star checked"></span>
-    </nobr>
-    <nobr id="dark-star">
-        <span class="fa fa-star"></span>
-    </nobr>
+<!--    <nobr id="check-star">-->
+<!--        <span class="fa fa-star checked"></span>-->
+<!--    </nobr>-->
+<!--    <nobr id="dark-star">-->
+<!--        <span class="fa fa-star"></span>-->
+<!--    </nobr>-->
 
 </div>
 

@@ -70,11 +70,11 @@ def logout_user(request):
 
 
 class AddLike2Comment(View):
-    def get(self, request, slug, id_comment, location=None):
+    def get(self, request, slug, id_comment):  #
         if request.user.is_authenticated:
             LikeCommentUser.objects.create(user=request.user, comment_id=id_comment)
-        if location is None:
-            return redirect("the-main-page")
+        # if location is None:
+        #     return redirect("the-main-page")
         return redirect("book-detail", slug=slug)
 
 
@@ -207,7 +207,7 @@ class UpdateBookAuthor(View):
 
 
 class AddComment(View):
-    def post(self, request, slug, location=None):
+    def post(self, request, slug):  #
         if request.user.is_authenticated:
             cf = CommentForm(data=request.POST)
             comment = cf.save(commit=False)

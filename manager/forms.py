@@ -85,6 +85,23 @@ class CommentForm(ModelForm):
         }
 
 
+class CommentSaveForm(ModelForm):
+    class Meta:
+        model = Comment
+        fields = [
+            'text',
+            'book',
+        ]
+        widgets = {
+            "text": Textarea(attrs={"class": "form-control", "rows": 5, "cols": 50}),
+            "book": TextInput(attrs={"class": "form-control"}, ),
+        }
+        help_texts = {
+            "text": "",
+            "book": "",
+        }
+
+
 class AuthorAddForm(ModelForm):
     class Meta:
         model = Book
