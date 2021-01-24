@@ -41,8 +41,8 @@ urlpatterns = [
     path("update_comment/<str:slug>/<int:id_comment>/",
          UpdateComment.as_view(),
          name="update-comment"),
-    path("add_like2comment_ajax/", add_like2comment),
-    path("delete_comment_ajax", delete_comment),
+    path("add_like2comment_ajax/<int:comment_id>", add_like2comment),  #
+    path("delete_comment_ajax/<int:comment_id>", delete_comment),  #
     path("personal_page/", personal_view, name="the-personal-page"),
     path("git/", git_callback, name="git-callback"),
     path("", MyPage.as_view(), name="the-main-page"),

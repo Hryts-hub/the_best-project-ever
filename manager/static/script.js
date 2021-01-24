@@ -1,27 +1,71 @@
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+
 $('document').ready(function () {
     $('.like-comment').on('click', function like_com () {
         let id=$(this).attr('id');
+        let comment_id = id.split('-')[2];
         $.ajax({
-            url:"/shop/add_like2comment_ajax",
-            data: {"comment_id": id.split('-')[2]},
-            method: "GET",
+            url:`/shop/add_like2comment_ajax/${comment_id}`,
+            headers: {'X-CSRFToken': csrftoken},
+            method: "PUT",
             success: function (data) {
                 $(`#${id}`).html(`Likes: ${data['likes']}`);
             }
         })
     });
 
+//    $('.like-comment').on('click', function like_com () {
+//        let id=$(this).attr('id');
+//        $.ajax({
+//            url:"/shop/add_like2comment_ajax",
+//            data: {"comment_id": id.split('-')[2]},
+//            method: "GET",
+//            success: function (data) {
+//                $(`#${id}`).html(`Likes: ${data['likes']}`);
+//            }
+//        })
+//    });
+
     $('.delete-comment').on('click', function () {
         let id=$(this).attr('id'), id2=`block-comment-${id.split("-")[2]}`;
+        let comment_id = id.split("-")[2];
         $.ajax({
-            url: "/shop/delete_comment_ajax",
-            data: {"comment_id": id.split("-")[2]},
-            method: "GET",
+            url: `/shop/delete_comment_ajax/${comment_id}`,
+            method: "DELETE",
+            headers: {'X-CSRFToken': csrftoken},
             success: function (data) {
                 $(`#${id2}`).remove()
             }
         })
     });
+
+//    $('.delete-comment').on('click', function () {
+//        let id=$(this).attr('id'), id2=`block-comment-${id.split("-")[2]}`;
+//        $.ajax({
+//            url: "/shop/delete_comment_ajax",
+//            data: {"comment_id": id.split("-")[2]},
+//            method: "GET",
+//            success: function (data) {
+//                $(`#${id2}`).remove()
+//            }
+//        })
+//    });
 
     $('.delete-book').on('click', function () {
         let id=$(this).attr('id'), id2=`${id.split("-")[2]}`;
