@@ -1,12 +1,17 @@
 
 from django.http import JsonResponse
 from rest_framework import status
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.generics import DestroyAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from manager.models import LikeCommentUser, Comment, Book
 
 from manager.models import LikeBookUser as RateBookUser
 from manager.forms import CommentSaveForm
+from manager.permissions import IsAuthor
+from manager.serializers import CommentSerializer
 
 
 def add_like2comment(request, comment_id):
@@ -31,15 +36,21 @@ def add_like2comment(request, comment_id):
 #     return JsonResponse({}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-class DeleteComment(APIView):
-    def delete(self, request, comment_id):
-        if request.user.is_authenticated:
-            comment = Comment.objects.get(id=comment_id)
-            if request.user == comment.author:
-                comment.delete()
-                return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
-            return JsonResponse({}, status=status.HTTP_403_FORBIDDEN)
-        return JsonResponse({}, status=status.HTTP_401_UNAUTHORIZED)
+# class DeleteComment(APIView):
+#     def delete(self, request, comment_id):
+#         if request.user.is_authenticated:
+#             comment = Comment.objects.get(id=comment_id)
+#             if request.user == comment.author:
+#                 comment.delete()
+#                 return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
+#             return JsonResponse({}, status=status.HTTP_403_FORBIDDEN)
+#         return JsonResponse({}, status=status.HTTP_401_UNAUTHORIZED)
+
+class DeleteComment(DestroyAPIView):
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated, IsAuthor]
+    serializer_class = CommentSerializer
+    queryset = Comment.objects.all()
 
 
 def delete_book(request):

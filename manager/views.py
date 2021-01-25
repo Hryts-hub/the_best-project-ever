@@ -69,13 +69,13 @@ def logout_user(request):
     return redirect("the-main-page")
 
 
-class AddLike2Comment(View):
-    def get(self, request, slug, id_comment):  #
-        if request.user.is_authenticated:
-            LikeCommentUser.objects.create(user=request.user, comment_id=id_comment)
-        # if location is None:
-        #     return redirect("the-main-page")
-        return redirect("book-detail", slug=slug)
+# class AddLike2Comment(View):
+#     def get(self, request, slug, id_comment):  #
+#         if request.user.is_authenticated:
+#             LikeCommentUser.objects.create(user=request.user, comment_id=id_comment)
+#         # if location is None:
+#         #     return redirect("the-main-page")
+#         return redirect("book-detail", slug=slug)
 
 
 class AddRate2Book(View):
@@ -218,12 +218,12 @@ class AddComment(View):
         return redirect("book-detail", slug=slug)
 
 
-def comment_delete(request, slug, id_comment):
-    if request.user.is_authenticated:
-        comment = Comment.objects.get(id=id_comment)
-        if request.user == comment.author:
-            comment.delete()
-    return redirect("book-detail", slug=slug)
+# def comment_delete(request, slug, id_comment):
+#     if request.user.is_authenticated:
+#         comment = Comment.objects.get(id=id_comment)
+#         if request.user == comment.author:
+#             comment.delete()
+#     return redirect("book-detail", slug=slug)
 
 
 class UpdateComment(View):
