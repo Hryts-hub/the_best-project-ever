@@ -13,17 +13,6 @@ from manager.permissions import IsAuthor
 from manager.serializers import CommentSerializer, LikeCommentUserSerialize
 
 
-# def add_like2comment(request, comment_id):
-#     if request.user.is_authenticated:
-#         LikeCommentUser.objects.create(user=request.user, comment_id=comment_id)
-#         comment = Comment.objects.get(id=comment_id)
-#         count_likes = comment.likes
-#         return JsonResponse(
-#             {"likes": count_likes},
-#             status=status.HTTP_201_CREATED
-#         )
-#     return JsonResponse({}, status=status.HTTP_401_UNAUTHORIZED)
-
 class AddLikeComment(RetrieveUpdateAPIView):
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAuthenticated]

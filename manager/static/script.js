@@ -144,10 +144,11 @@ $('document').ready(function () {
 
                 divcom.querySelector('.like-comment').addEventListener('click', function () {
                     let id=$(this).attr('id');
+                    let comment_id = id.split('-')[2];
                     $.ajax({
-                        url:"/shop/add_like2comment_ajax",
-                        data: {"comment_id": id.split('-')[2]},
-                        method: "GET",
+                        url:`/shop/add_like2comment_ajax/${comment_id}`,
+                        headers: {'X-CSRFToken': csrftoken},
+                        method: "PUT",
                         success: function (data) {
                             $(`#${id}`).html(`Likes: ${data['likes']}`);
                         }
@@ -156,10 +157,11 @@ $('document').ready(function () {
 
                 divcom.querySelector('.btn').addEventListener('click', function () {
                     let id=$(this).attr('id'), id2=`block-comment-${id.split("-")[2]}`;
+                    let comment_id = id.split("-")[2];
                     $.ajax({
-                        url: "/shop/delete_comment_ajax",
-                        data: {"comment_id": id.split("-")[2]},
-                        method: "GET",
+                        url: `/shop/delete_comment_ajax/${comment_id}`,
+                        method: "DELETE",
+                        headers: {'X-CSRFToken': csrftoken},
                         success: function (data) {
                             $(`#${id2}`).remove()
                         }

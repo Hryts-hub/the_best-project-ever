@@ -40,7 +40,7 @@ class Book(models.Model):
     )
     genres = models.ManyToManyField(Genre, blank=True, related_name="books_genres")
     book_img = models.ImageField(upload_to='images/', default=0, blank=True, null=True)
-    read_users = models.ManyToManyField(User, blank=True, related_name="books_read_by_user")  #
+    read_users = models.ManyToManyField(User, blank=True, related_name="books_read_by_user")
 
     def __str__(self):
         return f"{self.title}-{self.slug}"
@@ -109,13 +109,5 @@ class LikeCommentUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked_comment_table")
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="liked_user_table")
 
-    # def save(self, **kwargs):
-    #     try:
-    #         super().save(**kwargs)
-    #     except:
-    #         LikeCommentUser.objects.get(user=self.user, comment=self.comment).delete()
-    #         self.comment.likes -= 1
-    #     else:
-    #         self.comment.likes += 1
-    #     self.comment.save()
+
 
