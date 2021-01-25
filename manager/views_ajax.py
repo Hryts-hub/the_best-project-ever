@@ -1,50 +1,54 @@
-
+from rest_framework.response import Response
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.generics import DestroyAPIView
+from rest_framework.generics import DestroyAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
-from rest_framework.response import Response
+
 from manager.models import LikeCommentUser, Comment, Book
 
 from manager.models import LikeBookUser as RateBookUser
 from manager.forms import CommentSaveForm
 from manager.permissions import IsAuthor
-from manager.serializers import CommentSerializer
+from manager.serializers import CommentSerializer, LikeCommentUserSerialize
 
 
-def add_like2comment(request, comment_id):
-    if request.user.is_authenticated:
-        LikeCommentUser.objects.create(user=request.user, comment_id=comment_id)
-        comment = Comment.objects.get(id=comment_id)
-        count_likes = comment.likes
-        return JsonResponse(
-            {"likes": count_likes},
-            status=status.HTTP_201_CREATED
-        )
-    return JsonResponse({}, status=status.HTTP_401_UNAUTHORIZED)
-
-
-# def delete_comment(request, comment_id):
+# def add_like2comment(request, comment_id):
 #     if request.user.is_authenticated:
+#         LikeCommentUser.objects.create(user=request.user, comment_id=comment_id)
 #         comment = Comment.objects.get(id=comment_id)
-#         if request.user == comment.author:
-#             comment.delete()
-#             return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
-#         return JsonResponse({}, status=status.HTTP_403_FORBIDDEN)
+#         count_likes = comment.likes
+#         return JsonResponse(
+#             {"likes": count_likes},
+#             status=status.HTTP_201_CREATED
+#         )
 #     return JsonResponse({}, status=status.HTTP_401_UNAUTHORIZED)
 
+class AddLikeComment(RetrieveUpdateAPIView):
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = LikeCommentUserSerialize
+    queryset = LikeCommentUser.objects.all()
 
-# class DeleteComment(APIView):
-#     def delete(self, request, comment_id):
-#         if request.user.is_authenticated:
-#             comment = Comment.objects.get(id=comment_id)
-#             if request.user == comment.author:
-#                 comment.delete()
-#                 return JsonResponse({}, status=status.HTTP_204_NO_CONTENT)
-#             return JsonResponse({}, status=status.HTTP_403_FORBIDDEN)
-#         return JsonResponse({}, status=status.HTTP_401_UNAUTHORIZED)
+    def get_object(self):
+        user = self.request.user
+        comment_id = self.kwargs['pk']
+        query_set = LikeCommentUser.objects.filter(user=user, comment_id=comment_id)
+        if query_set.exists():
+            return query_set.first()
+
+    def put(self, request, *args, **kwargs):
+        obj = self.get_object()
+        comment = Comment.objects.get(id=self.kwargs['pk'])
+        if obj is None:
+            LikeCommentUser.objects.create(user=request.user, comment_id=self.kwargs['pk'])
+            comment.likes += 1
+        else:
+            obj.delete()
+            comment.likes -= 1
+        comment.save()
+        return Response({"likes": comment.likes})
+
 
 class DeleteComment(DestroyAPIView):
     authentication_classes = [SessionAuthentication]
